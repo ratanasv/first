@@ -4,8 +4,13 @@
 			<slide ng-repeat="slide in slides" active="slide.active">
 				<img ph-img="900x500"  style="margin:auto;"/>
 				<div class="carousel-caption">
-					<h4>Slide {{$index}}</h4>
+					<h1>Slide {{$index}}. Questo lascerà a bocca aperta.</h1>
 					<p>{{slide.text}}</p>
+					<p>
+						<a class="btn btn-info" href="#">
+							Sign up today <i class="fa fa-credit-card"></i>
+						</a>
+					</p>
 				</div>
 			</slide>
 		</carousel>
