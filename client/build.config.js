@@ -30,7 +30,7 @@ module.exports = {
     ctpl: [ 'src/common/**/*.tpl.html' ],
 
     html: [ 'src/index.html' ],
-    less: 'src/less/main.less'
+    less: [ 'src/less/main.less']
   },
 
   /**
@@ -70,8 +70,10 @@ module.exports = {
       'vendor/oauth.io/oauth.min.js'
     ],
     css: [
+			'vendor/bootstrap/dist/css/bootstrap.css',
+			'vendor/bootstrap/dist/css/boostrap-theme.css'
     ],
     assets: [
     ]
-  },
+  }
 };
