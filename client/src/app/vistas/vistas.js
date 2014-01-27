@@ -25,7 +25,7 @@ angular.module( 'ngBoilerplate.vistas', [
 			"but wait! A third!"
 		];
 
-		$scope.carouselInterval = 2000;
+		$scope.carouselInterval = -1;
 		var slides = $scope.slides = [];
 		$scope.addSlide = function() {
 			var newWidth = 600 + slides.length;
