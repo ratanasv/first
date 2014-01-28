@@ -25,19 +25,18 @@ angular.module( 'ngBoilerplate.vistas', [
 			"but wait! A third!"
 		];
 
-		$scope.carouselInterval = -1;
-		var slides = $scope.slides = [];
-		$scope.addSlide = function() {
-			var newWidth = 600 + slides.length;
-			slides.push({
-				image: 'http://placekitten.com/' + newWidth + '/300',
-				text: ['More','Extra','Lots of','Surplus'][slides.length % 4] + ' ' +
-					['Cats', 'Kittys', 'Felines', 'Cutes'][slides.length % 4]
-			});
-		};
-		for (var i=0; i<4; i++) {
-			$scope.addSlide();
-		}
+		$scope.carouselInterval = 4000;
+		var slides = [{
+			image: 'assets/idaho.png',
+			header: 'Visual Analytics Software',
+			text: 'enable scientists to better understand and communicate about large and complex environmental problems ' +
+				'that span spatial and temporal scales'
+		},
+			{image: 'assets/eugene.png',
+				header:'Ecology Informatics Research',
+				text: 'enable the required visual analytics and implement a proof of concept software tool'}
+		];
+		$scope.slides = slides;
 	})
 
 ;
