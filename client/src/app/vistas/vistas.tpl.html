@@ -8,7 +8,7 @@
 					<p>{{slide.text}}</p>
 					<p>
 						<a class="btn btn-info" href="#">
-							Sign up today &nbsp &nbsp <i class="fa fa-credit-card"></i>
+							<i class="fa fa-credit-card"></i> &nbsp Sign up today
 						</a>
 					</p>
 				</div>
@@ -55,6 +55,22 @@
 			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
 		</div><!-- /.col-lg-4 -->
 	</div><!-- /.row -->
+
+	<hr class="featurette-divider">
+
+	<div ng-controller="CollapseCtrl">
+		<button class="btn btn-default" ng-click="isCollapsed = !isCollapsed">Toggle collapse</button>
+		<hr>
+		<div collapse="isCollapsed">
+			<div class="well well-lg">
+				Cujus indicium est, quod necesse est, gravi de rebus publicis internationalibus consiliis, et nongovernmental
+				actiones cancer, ne in low-et medio-reditus terris. Vitandum etiam ne fama iterum in Litteris legimus, ut
+				regionibus elit.
+
+			</div>
+		</div>
+
+	</div>
 
 
 	<!-- START THE FEATURETTES -->
