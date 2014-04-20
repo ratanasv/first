@@ -18,7 +18,7 @@ angular.module( 'ngBoilerplate.vistas', [
 	})
 
 	.controller('CollapseCtrl', function CollapseCtrl($scope) {
-		$scope.isCollapsed = true;
+		$scope.isCollapsed = false;
 	})
 
 	.controller( 'VISTASCtrl', function VISTASCtrl( $scope ) {
@@ -30,16 +30,18 @@ angular.module( 'ngBoilerplate.vistas', [
 		];
 
 		$scope.carouselInterval = 4000;
-		var slides = [{
-			image: 'assets/idaho.png',
-			header: 'Visual Analytics Software',
-			text: 'enable scientists to better understand and communicate about large and complex environmental problems ' +
-				'that span spatial and temporal scales'
-		},{
-			image: 'assets/eugene.png',
-			header:'Ecology Informatics Research',
-			text: 'enable the required visual analytics and implement a proof of concept software tool'
-		}
+		var slides = [
+			{
+				image: 'assets/idaho.png',
+				header: 'Visual Analytics Software',
+				text: 'enable scientists to better understand and communicate about large and complex' + 
+					'environmental problems that span spatial and temporal scales'
+			},
+			{
+				image: 'assets/eugene.png',
+				header:'Ecology Informatics Research',
+				text: 'enable the required visual analytics and implement a proof of concept software tool'
+			}
 		];
 		$scope.slides = slides;
 	})
