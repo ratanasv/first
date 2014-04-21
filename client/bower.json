@@ -1,15 +1,14 @@
 {
-	"name": "VISTAS",
-	"version": "0.3.2",
-	"devDependencies": {
-		"angular": "*",
-		"angular-mocks": "~1.0.7",
-		"bootstrap": "*",
-		"angular-bootstrap": "*",
-		"angular-ui-router": "~0.0.1",
-		"angular-ui-utils": "~0.0.3",
-		"oauth.io": "*",
-		"bower-angular-placeholders": "*"
-	},
-	"dependencies": {}
+  "name": "ng-boilerplate",
+  "version": "0.3.2",
+  "devDependencies": {
+    "angular": "~1.2",
+    "angular-mocks": "~1.2",
+    "bootstrap": "~3.1",
+    "angular-bootstrap": "~0.10.0",
+    "angular-ui-router": "~0.2",
+    "oauth.io": "*",
+    "bower-angular-placeholders": "*"
+  },
+  "dependencies": {}
 }
