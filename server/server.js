@@ -7,8 +7,8 @@ var https = require('https');
 var express = require('express');
 var initWinston = require('./lib/initWinston');
 var passport = require('passport');
-var privateKey = fs.readFileSync('~/.ssl/server.key');
-var certificate = fs.readFileSync('~/.ssl/server.crt');
+var privateKey = fs.readFileSync('/.ssl/server.key');
+var certificate = fs.readFileSync('/.ssl/server.crt');
 
 var app = express();
 var winston = initWinston.winston;
@@ -18,11 +18,13 @@ var httpsServer = https.createServer({
     cert: certificate
 }, app);
 
-
-app.get('/hello/world', function (req, res){
-    res.send('oh hi there');
+app.configure(function() {
+	console.log(__dirname);
+	app.use('/', express.static(__dirname + '/../client/build'));
 });
 
-httpsServer.listen(8080);
 
-winston.info('listening on port 8080...');
+
+httpsServer.listen(443);
+
+winston.info('listening on port 443...');
