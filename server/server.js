@@ -1,15 +1,15 @@
 /**
  * Created by ratanasv on 1/25/14.
  */
-
+var config = require('./config');
 var fs = require('fs');
 var https = require('https');
 var express = require('express');
 var initWinston = require('./lib/initWinston');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var privateKey = fs.readFileSync('/.ssl/server.key');
-var certificate = fs.readFileSync('/.ssl/server.crt');
+var privateKey = fs.readFileSync(config['SSL_KEY']);
+var certificate = fs.readFileSync(config['SSL_CERT']);
 
 var app = express();
 var winston = initWinston.winston;
@@ -54,6 +54,6 @@ app.post('/login',
 );
 
 
-httpsServer.listen(443);
+httpsServer.listen(config['SERVER_PORT']);
 
-winston.info('listening on port 443...');
+winston.info('listening on port ' + config['SERVER_PORT'] + '...');
