@@ -424,7 +424,7 @@ module.exports = function ( grunt ) {
      *
      * But we don't need the same thing to happen for all the files. 
      */
-    delta: {
+    watch: {
       /**
        * By default, we want the Live Reload to work for all tasks; this is
        * overridden in some tasks (like this file) where browser resources are
@@ -432,7 +432,7 @@ module.exports = function ( grunt ) {
        * plugin should auto-detect.
        */
       options: {
-        livereload: true
+        livereload: false
       },
 
       /**
@@ -546,8 +546,7 @@ module.exports = function ( grunt ) {
    * `delta`) and then add a new task called `watch` that does a clean build
    * before watching for changes.
    */
-  grunt.renameTask( 'watch', 'delta' );
-  grunt.registerTask( 'watch', [ 'build', 'karma:unit', 'delta' ] );
+  grunt.registerTask( 'continuous', [ 'build', 'karma:unit', 'watch' ] );
 
   /**
    * The default task is to build and compile.
