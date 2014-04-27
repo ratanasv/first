@@ -45,10 +45,10 @@ app.post('/login',
 
 app.get('/secure', 
 	function(req, res) {
-		/*if (req.isAuthenticated) {
-			return res.send(401, 'not authorized');
-		}*/
-		res.send('yay!!!')
+		if (req.isAuthenticated()) {
+			return res.json(JSON.stringify(req.user));
+		}
+		res.send(401, 'not authorized')
 	}
 );
 
