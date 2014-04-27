@@ -31,11 +31,10 @@ angular.module('vir.login', [
 			}
 		})
 		.success(function(data, status, headers, config) {
-			$location.path('/');
-			$scope.apply();
+			alert(data);
 		})
 		.error(function(data, status, headers, config) {
-			alert('failure' + data);
+			alert('error: ' + data);
 		});
 	};
 }
