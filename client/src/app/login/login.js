@@ -31,7 +31,7 @@ angular.module('vir.login', [
 			}
 		})
 		.success(function(data, status, headers, config) {
-			alert(data);
+			$location.url('/secure');
 		})
 		.error(function(data, status, headers, config) {
 			alert('error: ' + data);

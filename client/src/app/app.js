@@ -4,7 +4,8 @@ angular.module( 'ngBoilerplate', [
   'ngBoilerplate.home',
   'ngBoilerplate.about',
   'ui.router',
-  'vir.login'
+  'vir.login',
+  'vir.secure'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {

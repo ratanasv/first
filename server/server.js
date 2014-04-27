@@ -36,33 +36,29 @@ app.configure(function() {
 });
 
 app.post('/login',
-	passport.authenticate('local', {
-		successRedirect: '/secure',
-		failureRedirect: '/loginfailed',
-		failureFlash: true
-	})
+	passport.authenticate('local'), 
+	function(req, res) {
+		if (req.isAuthenticated()) {
+			return res.json(JSON.stringify(req.user));
+		} else {
+			return res.send(401, 'not authorized');
+		}
+	}
 );
 
 app.get('/secure', 
 	function(req, res) {
 		if (req.isAuthenticated()) {
 			return res.json(JSON.stringify(req.user));
+		} else {
+			return res.send(401, 'not authorized');
 		}
-		res.send(401, 'not authorized')
 	}
 );
 
-app.get('/loginfailed', function(req, res) {
-	res.send('login failed');
+app.post('oauth2callback', function(req, res) {
+	res.send('ok');
 });
-
-
-function ensureAuthenticated(req, res, next) {
-	if (req.isAuthenticated()) {
-		return next();
-	}
-	res.send('nope');
-}
 
 
 httpsServer.listen(config['SERVER_PORT']);
