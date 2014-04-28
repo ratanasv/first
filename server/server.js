@@ -5,14 +5,14 @@ var config = require('./config');
 var fs = require('fs');
 var https = require('https');
 var express = require('express');
-var initWinston = require('./lib/initWinston');
 var privateKey = fs.readFileSync(config['SSL_KEY']);
 var certificate = fs.readFileSync(config['SSL_CERT']);
 var passport = require('passport');
 var configurePassport = require('./lib/configurePassport.js');
 var flash = require('connect-flash');
 var app = express();
-var winston = initWinston.winston;
+var picLoaderRouter = require('./router/picLoaderRouter.js');
+var winstonLogger = require('./lib/winstonLogger');
 
 
 var httpsServer = https.createServer({
@@ -24,6 +24,7 @@ configurePassport(passport);
 
 
 app.configure(function() {
+	app.use(winstonLogger());
 	app.use(express.cookieParser());
 	app.use(express.bodyParser());
 	app.use(express.session({
@@ -32,8 +33,10 @@ app.configure(function() {
 	app.use(flash());
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.use('/', express.static(__dirname + '/../client/build'));
+	app.use(express.static(__dirname + '/../client/build'));
 });
+
+picLoaderRouter(app);
 
 app.post('/login',
 	passport.authenticate('local'), 
@@ -63,4 +66,4 @@ app.post('oauth2callback', function(req, res) {
 
 httpsServer.listen(config['SERVER_PORT']);
 
-winston.info('listening on port ' + config['SERVER_PORT'] + '...');
+winstonLogger.winston.info('listening on port ' + config['SERVER_PORT'] + '...');

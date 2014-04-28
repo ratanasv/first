@@ -4,13 +4,13 @@
 
 var winston = require('winston');
 
-winston.add(winston.transports.File, {
+/*winston.add(winston.transports.File, {
     filename: 'server.log',
     timestamp: function() {
         return new Date().toLocaleString();
     },
     colorize: false
-});
+});*/
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
     timestamp: function() {
@@ -24,4 +24,4 @@ winston.addColors({
     error: 'red'
 });
 
-exports['winston'] = winston;
+module.exports.winston = winston;
