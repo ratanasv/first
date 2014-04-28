@@ -12,7 +12,10 @@ Not valid
 <hr>
 <h4>List of Submitted Universities</h4>
 <ul>
-<li ng-repeat='university in universities'>
+<div ng-repeat='university in universities'>
+<li>
 {{university.name}}
 </li>
+<img ng-src='{{university.pictureURL}}' width='160' height = '160'>
+</div>
 </ul>
