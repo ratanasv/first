@@ -1,7 +1,7 @@
 /**
  * Created by ratanasv on 1/25/14.
  */
-var config = require('./config');
+var config = require('../config/config');
 var fs = require('fs');
 var https = require('https');
 var express = require('express');
