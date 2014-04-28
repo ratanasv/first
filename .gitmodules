@@ -1,0 +1,3 @@
+[submodule "config"]
+	path = config
+	url = 128.193.36.250:~/Documents/secret_config.git
