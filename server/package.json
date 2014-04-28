@@ -13,7 +13,8 @@
         "open": "0.0.3",
         "request": "~2.16.6",
         "winston": "*",
-        "connect-flash": "*"
+        "connect-flash": "*",
+        "request": "*"
     },
     "devDependencies": {
         "rewire": "~1.0.3",

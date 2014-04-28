@@ -36,7 +36,7 @@ app.configure(function() {
 	app.use(express.static(__dirname + '/../client/build'));
 });
 
-picLoaderRouter(app);
+picLoaderRouter(app, winstonLogger.winston);
 
 app.post('/login',
 	passport.authenticate('local'), 

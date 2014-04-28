@@ -19,20 +19,30 @@ angular.module('vir.picloader', [
 })
 
 .controller('PicLoaderCtrl', function($scope, $http, $location) {
+
+	function refreshUniversities() {
+		$http.get('/picloader')
+		.success(function(data, status, headers, config) {
+			$scope.universities = data;
+		})
+		.error(function(data, status, headers, config) {
+			alert('error: ' + data);
+		});
+	}
+	
+	refreshUniversities();
+
 	$scope.submit = function() {
 		if (!$scope.picLoaderForm.picture.$valid) {
 			return alert('not a valid form');
 		}
 
-		$http({
-			url: '/picloader',
-			method: 'POST',
-			params: {
-				university: $scope.university
-			}
+		$http.post('/picloader', {
+			university: $scope.university
 		})
 		.success(function(data, status, headers, config) {
 			alert(JSON.stringify(data));
+			refreshUniversities();
 		})
 		.error(function(data, status, headers, config) {
 			alert('error: ' + data);

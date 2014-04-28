@@ -1,8 +1,18 @@
 <form name='picLoaderForm'>
+
 University Name: <input type='text' ng-model='university.name'><br>
+
 Picture: <input type='url' name='picture' ng-model='university.pictureURL'><br>
+
 <span class='error' ng-show='picLoaderForm.picture.$error.url'>
 Not valid
 </span>
 </form>
-<button ng-click='submit()'> SUBMIT </button>
+<button class='btn btn-sm btn-success' ng-click='submit()'> SUBMIT </button>
+<hr>
+<h4>List of Submitted Universities</h4>
+<ul>
+<li ng-repeat='university in universities'>
+{{university.name}}
+</li>
+</ul>
