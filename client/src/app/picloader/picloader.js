@@ -20,13 +20,19 @@ angular.module('vir.picloader', [
 
 .controller('PicLoaderCtrl', function($scope, $http, $location) {
 	$scope.submit = function() {
+		if (!$scope.picLoaderForm.picture.$valid) {
+			return alert('not a valid form');
+		}
+
 		$http({
 			url: '/picloader',
 			method: 'POST',
-			params: {}
+			params: {
+				university: $scope.university
+			}
 		})
 		.success(function(data, status, headers, config) {
-			alert('success!');
+			alert(JSON.stringify(data));
 		})
 		.error(function(data, status, headers, config) {
 			alert('error: ' + data);
