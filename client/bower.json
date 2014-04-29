@@ -8,7 +8,8 @@
     "angular-bootstrap": "~0.10.0",
     "angular-ui-router": "~0.2",
     "oauth.io": "*",
-    "bower-angular-placeholders": "*"
+    "bower-angular-placeholders": "*",
+    "d3": "~3.4.6"
   },
   "dependencies": {}
 }
