@@ -2,6 +2,11 @@
  * Created by ratanasv on 1/25/14.
  */
 
+ /**
+    InitWinston should be called on once.
+    Subsequent references to Winston should be invoked via winstonLogger.js
+  */
+
 var winston = require('winston');
 
 /*winston.add(winston.transports.File, {
