@@ -46,5 +46,9 @@ angular.module('vir.purchase', [
 		}
 		$scope.items[id].selected = !$scope.items[id].selected;
 	};
+
+	$scope.onDone = function() {
+		alert('done!!!');
+	};
 });
 

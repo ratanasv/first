@@ -1,8 +1,8 @@
-<div class="bar bar-header bar-positive">
-	<h1 class="title">bar-positive</h1>
+<div class='bar bar-header bar-positive'>
+	<h1 class='title'>List of Items</h1>
 </div>
 <ion-content style='padding-top: 60px;'>
-<div class="list">
+<div class='list'>
 
 	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right' ng-click='toggleSelection(key)' >
 		<img ng-src='{{value.image}}'>
@@ -14,3 +14,11 @@
 
 </div>
 </ion-content>
+
+
+
+<div class='bar bar-footer'>
+	<button ng-click='onDone()' class='button button-block button-positive'>
+		Block Button
+	</button>
+</div>
