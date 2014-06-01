@@ -2,14 +2,15 @@
   "name": "ng-boilerplate",
   "version": "0.3.2",
   "devDependencies": {
-    "angular": "~1.2",
+    "angular": "~1.2.16",
     "angular-mocks": "~1.2",
     "bootstrap": "~3.1",
     "angular-bootstrap": "~0.10.0",
     "angular-ui-router": "~0.2",
     "oauth.io": "*",
     "bower-angular-placeholders": "*",
-    "d3": "~3.4.6"
+    "d3": "~3.4.6",
+    "angular-touch": "~1.2.16"
   },
   "dependencies": {}
 }

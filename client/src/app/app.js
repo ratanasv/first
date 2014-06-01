@@ -6,7 +6,8 @@ angular.module( 'ngBoilerplate', [
   'ui.router',
   'vir.login',
   'vir.secure',
-  'vir.picloader'
+  'vir.picloader',
+  'vir.purchase'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
