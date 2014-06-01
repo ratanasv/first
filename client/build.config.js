@@ -75,6 +75,10 @@ module.exports = {
       'vendor/ionic/css/ionic.css'
     ],
     assets: [
+
+    ],
+    fonts: [
+      'ionicons.*'
     ]
   },
 };

@@ -4,11 +4,13 @@
 <ion-content style='padding-top: 60px;'>
 <div class="list">
 
-    <div ng-repeat='item in items' class='item item-thumbnail-left' ng-click='onClick(item.name)'>
-      <img ng-src='{{item.image}}'>
-      <h2>{{item.name}}</h2>
-      <p>{{item.description}}</p>
-    </div>
+	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right' ng-click='toggleSelection(key)' >
+		<img ng-src='{{value.image}}'>
+		<h2>{{value.name}}</h2>
+		<h1> 
+		<p>{{value.description}}</p>
+		<i ng-show='value.selected' class='icon ion-checkmark-round'></i>
+	</div>
 
 </div>
 </ion-content>

@@ -22,56 +22,29 @@ angular.module('vir.purchase', [
 })
 
 .controller('PurchaseCtrl', function($scope, $http, $location) {
-	$scope.items = [
-		{
+	$scope.items = {
+		'donut' : {
 			image: 'assets/donut.jpg',
 			name: 'Donut',
 			description: 'A sweet baked item'
 		},
-		{
+		'coffee' : {
 			image: 'assets/coffee.jpg',
 			name: 'Coffee',
 			description: 'Increase productivity'
 		},
-		{
-			image: 'assets/sandwich.jpg',
-			name: 'Sandwich',
-			description: 'Bread with things in the middle'
-		},
-		{
-			image: 'assets/donut.jpg',
-			name: 'Donut',
-			description: 'A sweet baked item'
-		},
-		{
-			image: 'assets/coffee.jpg',
-			name: 'Coffee',
-			description: 'Increase productivity'
-		},
-		{
-			image: 'assets/sandwich.jpg',
-			name: 'Sandwich',
-			description: 'Bread with things in the middle'
-		},
-		{
-			image: 'assets/donut.jpg',
-			name: 'Donut',
-			description: 'A sweet baked item'
-		},
-		{
-			image: 'assets/coffee.jpg',
-			name: 'Coffee',
-			description: 'Increase productivity'
-		},
-		{
+		'sandwich' : {
 			image: 'assets/sandwich.jpg',
 			name: 'Sandwich',
 			description: 'Bread with things in the middle'
 		}
-	];
+	};
 	
-	$scope.onClick = function(name) {
-		alert('you click ' + name);
+	$scope.toggleSelection = function(id) {
+		if ($scope.items[id].selected === undefined) {
+			return $scope.items[id].selected = true;
+		}
+		$scope.items[id].selected = !$scope.items[id].selected;
 	};
 });
 

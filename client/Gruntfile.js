@@ -119,6 +119,16 @@ module.exports = function ( grunt ) {
           }
        ]   
       },
+      build_vendor_fonts: {
+        files: [
+          {
+            src: ['<%= vendor_files.fonts %>'],
+            dest: '<%= build_dir %>/fonts/',
+            cwd: 'vendor/ionic/fonts/',
+            expand: true
+          }
+        ]
+      },
       build_appjs: {
         files: [
           {
@@ -545,7 +555,7 @@ module.exports = function ( grunt ) {
   grunt.registerTask( 'build', [
     'clean', 'html2js', 'jshint', 'coffeelint', 'coffee', 'less:build',
     'concat:build_css', 'copy:build_app_assets', 'copy:build_vendor_assets',
-    'copy:build_appjs', 'copy:build_vendorjs', 'index:build'
+    'copy:build_appjs', 'copy:build_vendorjs', 'copy:build_vendor_fonts', 'index:build'
   ]);
 
   /**
