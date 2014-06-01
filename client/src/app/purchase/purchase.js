@@ -22,9 +22,56 @@ angular.module('vir.purchase', [
 })
 
 .controller('PurchaseCtrl', function($scope, $http, $location) {
-	$scope.toggleLeft = function() {
-		$ionicSideMenuDelegate.toggleLeft();
-	};
+	$scope.items = [
+		{
+			image: 'assets/donut.jpg',
+			name: 'Donut',
+			description: 'A sweet baked item'
+		},
+		{
+			image: 'assets/coffee.jpg',
+			name: 'Coffee',
+			description: 'Increase productivity'
+		},
+		{
+			image: 'assets/sandwich.jpg',
+			name: 'Sandwich',
+			description: 'Bread with things in the middle'
+		},
+		{
+			image: 'assets/donut.jpg',
+			name: 'Donut',
+			description: 'A sweet baked item'
+		},
+		{
+			image: 'assets/coffee.jpg',
+			name: 'Coffee',
+			description: 'Increase productivity'
+		},
+		{
+			image: 'assets/sandwich.jpg',
+			name: 'Sandwich',
+			description: 'Bread with things in the middle'
+		},
+		{
+			image: 'assets/donut.jpg',
+			name: 'Donut',
+			description: 'A sweet baked item'
+		},
+		{
+			image: 'assets/coffee.jpg',
+			name: 'Coffee',
+			description: 'Increase productivity'
+		},
+		{
+			image: 'assets/sandwich.jpg',
+			name: 'Sandwich',
+			description: 'Bread with things in the middle'
+		}
+	];
 	
+	$scope.onClick = function(name) {
+		alert('you click ' + name);
+	};
 });
 
