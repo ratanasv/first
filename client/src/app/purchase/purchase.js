@@ -26,25 +26,46 @@ angular.module('vir.purchase', [
 		'donut' : {
 			image: 'assets/donut.jpg',
 			name: 'Donut',
-			description: 'A sweet baked item'
+			description: 'A sweet baked item',
+			cost: 1
 		},
 		'coffee' : {
 			image: 'assets/coffee.jpg',
 			name: 'Coffee',
-			description: 'Increase productivity'
+			description: 'Increase productivity',
+			cost: 2.6
 		},
 		'sandwich' : {
 			image: 'assets/sandwich.jpg',
 			name: 'Sandwich',
-			description: 'Bread with things in the middle'
+			description: 'Bread with things in the middle',
+			cost: 6.12
 		}
 	};
+	$scope.selectedItems = [];
 	
 	$scope.toggleSelection = function(id) {
 		if ($scope.items[id].selected === undefined) {
-			return $scope.items[id].selected = true;
+			$scope.items[id].selected = true;
+		} else {
+			$scope.items[id].selected = !$scope.items[id].selected;
 		}
-		$scope.items[id].selected = !$scope.items[id].selected;
+		
+		if ($scope.items[id].selected) {
+			$scope.selectedItems.push(id);
+		} else {
+			var foundItem = $scope.selectedItems.indexOf(id);
+			$scope.selectedItems.splice(foundItem, 1);
+		}
+	};
+
+	$scope.totalCost = function() {
+		var totalCost = 0.0;
+		for (var i=0; i<$scope.selectedItems.length; i++) {
+			var id = $scope.selectedItems[i];
+			totalCost += $scope.items[id].cost;
+		}
+		return totalCost;
 	};
 
 	$scope.onDone = function() {

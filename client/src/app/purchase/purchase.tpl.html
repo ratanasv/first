@@ -7,7 +7,7 @@
 	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right' ng-click='toggleSelection(key)' >
 		<img ng-src='{{value.image}}'>
 		<h2>{{value.name}}</h2>
-		<h1> 
+		<h3> ${{value.cost}}</h3>
 		<p>{{value.description}}</p>
 		<i ng-show='value.selected' class='icon ion-checkmark-round'></i>
 	</div>
@@ -18,7 +18,10 @@
 
 
 <div class='bar bar-footer'>
-	<button ng-click='onDone()' class='button button-block button-positive'>
-		Block Button
+	<button ng-click='onDone()' class='button button-positive'>
+		Send Order
 	</button>
+	<div class='title'>
+		Total Cost = ${{totalCost()}}
+	</div>
 </div>
