@@ -69,7 +69,8 @@ module.exports = {
       'vendor/angular-ui-router/release/angular-ui-router.js',
       'vendor/angular-ui-utils/modules/route/route.js',
       'vendor/oauth.io/oauth.min.js',
-      'vendor/d3/d3.js'
+      'vendor/d3/d3.js',
+      'vendor/socket.io-client/dist/socket.io.js'
     ],
     css: [
       'vendor/ionic/css/ionic.css'
