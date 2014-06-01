@@ -27,9 +27,11 @@ angular.module('vir.purchase', [
 	$scope.activeItem = $scope.items[$scope.activeItemNo];
 	$scope.onSwipeRight = function() {
 		$scope.activeItemNo = ($scope.activeItemNo + 1) % $scope.items.length;
+		$scope.activeItem = $scope.items[$scope.activeItemNo];
 	};
 	$scope.onSwipeLeft = function() {
 		$scope.activeItemNo = ($scope.activeItemNo - 1) % $scope.items.length;
+		$scope.activeItem = $scope.items[$scope.activeItemNo];
 	};
 	
 });
