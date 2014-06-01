@@ -12,6 +12,7 @@ var configurePassport = require('./lib/configurePassport.js');
 var flash = require('connect-flash');
 var app = express();
 var picLoaderRouter = require('./router/picLoaderRouter.js');
+var orderItemRouter = require('./router/orderItemRouter.js');
 var winstonLogger = require('./lib/winstonLogger');
 
 
@@ -37,6 +38,7 @@ app.configure(function() {
 });
 
 picLoaderRouter(app, winstonLogger.winston);
+orderItemRouter(app, winstonLogger.winston);
 
 app.post('/login',
 	passport.authenticate('local'), 
