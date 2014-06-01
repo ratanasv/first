@@ -2,7 +2,7 @@ angular.module('vir.purchase', [
 	'ui.router',
 	'templates-app',
 	'templates-common',
-	'ngTouch'
+	'ionic'
 ])
 
 .config(function($stateProvider) {
@@ -22,16 +22,8 @@ angular.module('vir.purchase', [
 })
 
 .controller('PurchaseCtrl', function($scope, $http, $location) {
-	$scope.items = ['apple', 'orange', 'banana'];
-	$scope.activeItemNo = 0;
-	$scope.activeItem = $scope.items[$scope.activeItemNo];
-	$scope.onSwipeRight = function() {
-		$scope.activeItemNo = ($scope.activeItemNo + 1) % $scope.items.length;
-		$scope.activeItem = $scope.items[$scope.activeItemNo];
-	};
-	$scope.onSwipeLeft = function() {
-		$scope.activeItemNo = ($scope.activeItemNo - 1) % $scope.items.length;
-		$scope.activeItem = $scope.items[$scope.activeItemNo];
+	$scope.toggleLeft = function() {
+		$ionicSideMenuDelegate.toggleLeft();
 	};
 	
 });
