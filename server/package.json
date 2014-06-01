@@ -1,26 +1,27 @@
 {
-    "name": "angular-app-server",
-    "description": "Back end server to support our angular app",
-    "version": "0.0.1",
-    "private": true,
-    "dependencies": {
-        "express": "~3.0",
-        "passport": "~0.1.12",
-        "passport-local": "~0.1.6",
-        "passport-google": "*",
-        "passport-oauth": "*",
-        "express-namespace": "~0.1.1",
-        "open": "0.0.3",
-        "request": "~2.16.6",
-        "winston": "*",
-        "connect-flash": "*",
-        "request": "*"
-    },
-    "devDependencies": {
-        "rewire": "~1.0.3",
-        "supervisor": "~0.4.1",
-        "grunt": "~0.4",
-        "grunt-contrib-jshint": "~0.2.0",
-        "grunt-contrib-nodeunit": "~0.1.2"
-    }
+  "name": "angular-app-server",
+  "description": "Back end server to support our angular app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "connect-flash": "*",
+    "express": "~3.0",
+    "express-namespace": "~0.1.1",
+    "hiredis": "^0.1.16",
+    "open": "0.0.3",
+    "passport": "~0.1.12",
+    "passport-google": "*",
+    "passport-local": "~0.1.6",
+    "passport-oauth": "*",
+    "redis": "^0.10.3",
+    "request": "*",
+    "winston": "*"
+  },
+  "devDependencies": {
+    "rewire": "~1.0.3",
+    "supervisor": "~0.4.1",
+    "grunt": "~0.4",
+    "grunt-contrib-jshint": "~0.2.0",
+    "grunt-contrib-nodeunit": "~0.1.2"
+  }
 }
