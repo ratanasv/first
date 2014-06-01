@@ -10,7 +10,7 @@
     "oauth.io": "*",
     "bower-angular-placeholders": "*",
     "d3": "~3.4.6",
-    "angular-touch": "~1.2.16"
-  },
-  "dependencies": {}
+    "angular-touch": "~1.2.16",
+    "ionic": "driftyco/ionic-bower#~0.9.26"
+  }
 }

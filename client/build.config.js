@@ -69,9 +69,11 @@ module.exports = {
       'vendor/angular-ui-utils/modules/route/route.js',
       'vendor/oauth.io/oauth.min.js',
       'vendor/d3/d3.js',
-      'vendor/angular-touch/angular-touch.js'
+      'vendor/angular-touch/angular-touch.js',
+      'vendor/js/ionic.js'
     ],
     css: [
+      'vendor/ionic/css/ionic.css'
     ],
     assets: [
     ]
