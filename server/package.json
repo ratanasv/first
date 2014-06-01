@@ -15,7 +15,6 @@
     "passport-oauth": "*",
     "redis": "^0.10.3",
     "request": "*",
-    "socket.io": "^1.0.3",
     "winston": "*"
   },
   "devDependencies": {
