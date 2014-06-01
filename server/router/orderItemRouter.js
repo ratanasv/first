@@ -3,7 +3,7 @@ var COLLECTION = 'order';
 var mongolabURL = 'https://api.mongolab.com/api/1/databases/'+DATABASE+'/collections/'+COLLECTION;
 var config = require('../../config/config');
 var redis = require('redis');
-var redisClient = redis.createClient(config['REDIS_PORT'], config['REDIS_HOST']);
+var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
 
 var ORDER_COUNTER = 'order.counter';
 var INFLIGHT_ITEMS = 'inflight.items';
@@ -43,11 +43,11 @@ function orderCounterCallback(res, payload, winston) {
 }
 
 module.exports = function(app, winston) {
-	app.get('/asdf', function(req, res) {
+	app.get('/item', function(req, res) {
 		res.send(200, 'pistachio');
 	});
 
-	app.post('/asdf', function(req, res) {
+	app.post('/item', function(req, res) {
 		var payload = req.body;
 
 		if (!payload) {

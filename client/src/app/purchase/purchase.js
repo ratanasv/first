@@ -69,7 +69,20 @@ angular.module('vir.purchase', [
 	};
 
 	$scope.onDone = function() {
-		alert('done!!!');
+		if ($scope.selectedItems.length === 0) {
+			return alert('your order is empty!');
+		}
+
+		$http.post('/item', {
+			customer: 'test customer',
+			items: $scope.selectedItems
+		})
+		.success(function(data, status, headers, config) {
+			alert('delivery time ' + data.deliveryTime);
+		})
+		.error(function(data, status, headers, config) {
+			alert('error: ' + data);
+		});
 	};
 });
 
