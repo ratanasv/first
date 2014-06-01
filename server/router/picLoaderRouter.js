@@ -11,6 +11,9 @@ module.exports = function(app, winston) {
 		payload.university = req.body.university;
 
 		winston.warn('payload to mongo: ' + JSON.stringify(payload));
+		if (!payload.university) {
+			return res.send(400, 'no university');
+		}
 		if (!payload.university.pictureURL) {
 			return res.send(400, 'no university.pictureURL');
 		}

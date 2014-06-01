@@ -25,9 +25,9 @@ configurePassport(passport);
 
 
 app.configure(function() {
+	app.use(express.bodyParser());
 	app.use(winstonLogger());
 	app.use(express.cookieParser());
-	app.use(express.bodyParser());
 	app.use(express.session({
 		secret: 'meow'
 	}));
