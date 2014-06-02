@@ -15,7 +15,8 @@
     "passport-oauth": "*",
     "redis": "^0.10.3",
     "request": "*",
-    "winston": "*"
+    "winston": "*",
+    "ws": "^0.4.31"
   },
   "devDependencies": {
     "rewire": "~1.0.3",

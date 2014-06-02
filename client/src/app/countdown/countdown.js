@@ -22,6 +22,23 @@ angular.module('vir.countdown', [
 })
 
 .controller('CountdownCtrl', function($scope, $http) {
-	
+	var socket = new WebSocket('wss://localhost:443');
+	var deliveryTime = new Date().getTime() + (1000*40);
+	socket.onopen = function() {
+		socket.send(JSON.stringify({
+			customer: 'Test Customer'
+		}));
+	};
+	socket.onmessage = function(message) {
+		var response = JSON.parse(message.data);
+		if (response.deliveryTime) {
+			deliveryTime = response.deliveryTime;
+			$scope.$apply();
+		}
+	};
+	setInterval(function() {
+		$scope.timeRemaining = (deliveryTime - new Date().getTime())/1000;
+		$scope.$apply();
+	}, 1000);
 });
 

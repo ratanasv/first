@@ -14,7 +14,7 @@ var app = express();
 var picLoaderRouter = require('./router/picLoaderRouter.js');
 var orderItemRouter = require('./router/orderItemRouter.js');
 var winstonLogger = require('./lib/winstonLogger');
-
+var initWebsocket = require('./lib/initWebsocket');
 
 var httpsServer = https.createServer({
     key: privateKey,
@@ -67,5 +67,6 @@ app.post('oauth2callback', function(req, res) {
 
 
 httpsServer.listen(config['SERVER_PORT']);
+initWebsocket(httpsServer);
 
 winstonLogger.winston.info('listening on port ' + config['SERVER_PORT'] + '...');
