@@ -5,5 +5,9 @@ module.exports = {
 
 	computeCustomerKey: function(customer) {
 		return customer.replace(/ /g, '.');
-	}
+	},
+
+	TTL: 60 * 60 * 1,
+	ORDER_COUNTER: 'ORDER.COUNTER',
+	INFLIGHT_ORDERS: 'INFLIGHT.ORDERS'
 };

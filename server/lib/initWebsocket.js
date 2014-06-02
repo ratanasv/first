@@ -4,17 +4,18 @@ var redis = require('redis');
 var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
 var computeOrderKey = require('./redisKeyCompute').computeOrderKey;
 var computeCustomerKey = require('./redisKeyCompute').computeCustomerKey;
-
-var NO_INFLIGHT_ORDER = 'NO_INFLIGHT_ORDER';
+var winston = require('./initWinston').winston;
+var TTL = require('./redisKeyCompute').TTL;
 
 function handleGetDeliveryTime(params, ws) {
 	var customer = params.customer;
+	var customerKey = computeCustomerKey(customer);
 
 	if (!customer) {
 		return writeWS(ws, 500, 'invalid parameter (no customer field)');
 	}
 
-	redisClient.get(computeCustomerKey(customer), function(err, orderKey) {
+	redisClient.get(customerKey, function(err, orderKey) {
 		if (err) {
 			return writeWS(ws, 500, 'redis customer retrieval error', {});
 		}
@@ -27,6 +28,10 @@ function handleGetDeliveryTime(params, ws) {
 
 
 		redisClient.get(orderKey, function(err, res) {
+			var orderInfo;
+			var subscriber;
+			var customerChannel = customerKey;
+
 			if (err) {
 				return writeWS(ws, 500, 'redis order retrieval error', {});
 			}
@@ -35,10 +40,33 @@ function handleGetDeliveryTime(params, ws) {
 				return writeWS(ws, 500, 'redis orderKey doesnt exist for the customer', {});
 			}
 
-			var orderInfo = JSON.parse(res);
+			orderInfo = JSON.parse(res);
 			writeWS(ws, 200, 'success', {
 				deliveryTime: orderInfo.deliveryTime
 			});
+
+			subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
+			subscriber.on('subscribe', function(channel, count) {
+				winston.log(customer + ' subscribes to ' + customerChannel);
+			});
+			subscriber.on('message', function(channel, newDeliveryTime) {
+				var newOrderInfo = orderInfo;
+				if (channel !== customerChannel) {
+					return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
+				}
+				if (isNan(newDeliveryTime)) {
+					return winston.error(newDeliveryTime + ' is not a number');
+				}
+
+				winston.log(orderKey + ' has new deliveryTime ' + newDeliveryTime);
+				newOrderInfo.deliveryTime = newDeliveryTime;
+				redisClient.set(orderKey, JSON.stringify(newOrderInfo), 'ex', TTL, function(err) {
+					writeWS(ws, 200, '', {
+						deliveryTime: newDeliveryTime
+					});
+				});			
+ 			});
+			subscriber.subscribe(customerChannel);
 		});
 	});
 }
@@ -56,6 +84,7 @@ module.exports = function(httpsServer) {
 	websocketServer.on('connection', function(ws) {
 		ws.on('message', function(message) {
 			var messageObject = JSON.parse(message);
+			winston.log(message);
 			if (!messageObject.method) {
 				return writeWS(ws, 400, 'no request method', {});
 			}

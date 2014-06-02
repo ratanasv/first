@@ -7,9 +7,8 @@ var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']
 var computeOrderKey = require('../lib/redisKeyCompute').computeOrderKey;
 var computeCustomerKey = require('../lib/redisKeyCompute').computeCustomerKey;
 
-var ORDER_COUNTER = 'order.counter';
-var INFLIGHT_ITEMS = 'inflight.items';
-var TTL = 60 * 60 * 1; //one hour
+var ORDER_COUNTER = require('../lib/redisKeyCompute').ORDER_COUNTER;
+var TTL = require('../lib/redisKeyCompute').TTL;
 
 function errorCallback(res, errorMessage, winston) {
 	winston.error(errorMessage);
