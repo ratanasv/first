@@ -16,23 +16,24 @@ function errorCallback(res, errorMessage, winston) {
 	res.send(500);
 }
 
-function orderCounterCallback(res, payload, winston) {
+function orderCounterCallback(res, newOrder, winston) {
 	return function(err, orderNumber) {
 		var orderKey = computeOrderKey(orderNumber);
 		if (err) {
 			return errorCallback(res, err, winston);
 		}
 
-		redisClient.set(orderKey, JSON.stringify(payload), 'ex', TTL, function(err, redisResponse) {
+		redisClient.set(orderKey, JSON.stringify(newOrder), 'ex', TTL, function(err, redisResponse) {
 			if (err) {
 				return errorCallback(res, err, winston);
 			}
 
 			res.send(200, JSON.stringify({
-				deliveryTime: payload.deliveryTime
+				deliveryTime: newOrder.deliveryTime
 			}));
 		});
-		redisClient.set(computeCustomerKey(payload.customer), orderKey, 'ex', TTL);
+
+		redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL);
 	}
 }
 
@@ -42,25 +43,25 @@ module.exports = function(app, winston) {
 	});
 
 	app.post('/item', function(req, res) {
-		var payload = req.body;
+		var newOrder = req.body;
 
-		if (!payload) {
-			return res.send(400);
+		if (!newOrder) {
+			return res.send(400, 'no body in the request');
 		}
-		if (!payload.customer) {
-			return res.send(400);
+		if (!newOrder.customer) {
+			return res.send(400, 'no customer name in the body');
 		}
-		if (!payload.items) {
-			return res.send(400);
+		if (!newOrder.items) {
+			return res.send(400, 'no items to queue in the body');
 		}
-		if (payload.items.length === 0) {
-			return res.send(400);
+		if (newOrder.items.length === 0) {
+			return res.send(400, 'items is of length zero');
 		}
 
-		payload.orderTime = new Date().getTime();
-		payload.deliveryTime = payload.orderTime + (1000 * 60 * 2);
+		newOrder.orderTime = new Date().getTime();
+		newOrder.deliveryTime = newOrder.orderTime + (1000 * 60 * 2);
 
-		redisClient.incr(ORDER_COUNTER, orderCounterCallback(res, payload, winston));
+		redisClient.incr(ORDER_COUNTER, orderCounterCallback(res, newOrder, winston));
 		
 	});
 

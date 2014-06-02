@@ -5,8 +5,15 @@ var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']
 var computeOrderKey = require('./redisKeyCompute').computeOrderKey;
 var computeCustomerKey = require('./redisKeyCompute').computeCustomerKey;
 
+var NO_INFLIGHT_ORDER = 'NO_INFLIGHT_ORDER';
+
 function handleGetDeliveryTime(params, ws) {
 	var customer = params.customer;
+
+	if (!customer) {
+		return writeWS(ws, 500, 'invalid parameter (no customer field)');
+	}
+
 	redisClient.get(computeCustomerKey(customer), function(err, orderKey) {
 		if (err) {
 			return writeWS(ws, 500, 'redis customer retrieval error', {});
@@ -14,6 +21,10 @@ function handleGetDeliveryTime(params, ws) {
 		if (orderKey === null) {
 			return writeWS(ws, 400, 'redis no order for this customer error', {});
 		}
+		if (orderKey === NO_INFLIGHT_ORDER) {
+			return writeWS(ws, 400, 'this customer has no inflight order', {});
+		}
+
 
 		redisClient.get(orderKey, function(err, res) {
 			if (err) {
