@@ -22,7 +22,6 @@ angular.module('vir.purchase', [
 })
 
 .controller('PurchaseCtrl', function($scope, $http, $location) {
-	$scope.customer = {};
 	$scope.items = {
 		'donut' : {
 			image: 'assets/donut.jpg',
@@ -74,12 +73,12 @@ angular.module('vir.purchase', [
 			return alert('your order is empty!');
 		}
 
-		if ($scope.customer.length === 0) {
+		if (!$scope.settings.name || $scope.settings.name.length === 0) {
 			return alert('input valid name');
 		}
 
 		$http.post('/item', {
-			customer: $scope.customer.name,
+			customer: $scope.settings.name,
 			items: $scope.selectedItems
 		})
 		.success(function(data, status, headers, config) {

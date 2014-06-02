@@ -1,22 +1,39 @@
 <!DOCTYPE html>
 <html ng-app="ngBoilerplate" ng-controller="AppCtrl">
-  <head>
-    <title ng-bind="pageTitle"></title>
+<head>
+  <title ng-bind="pageTitle"></title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- font awesome from BootstrapCDN -->
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <!-- font awesome from BootstrapCDN -->
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
-    <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
-    <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
+  <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
+  <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
 
-    <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
-    <script type="text/javascript" src="<%= file %>"></script><% }); %>
+  <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
+  <script type="text/javascript" src="<%= file %>"></script><% }); %>
 
-    </script>
-  </head>
-  <body>
-    <div ui-view="main"></div>
-  </body>
+</script>
+</head>
+<body>
+  <div class='bar bar-header bar-positive'>
+    <h1 class='title'>{{pageTitle}}</h1>
+  </div>
+  <div ui-view="main"></div>
+  <div class="tabs tabs-icon-top">
+    <a class="tab-item" ui-sref="purchase">
+      <i class="icon ion-beer"></i>
+      Items
+    </a>
+    <a class="tab-item" ui-sref="countdown">
+      <i class="icon ion-clock"></i>
+      Status
+    </a>
+    <a class="tab-item" ui-sref="settings">
+      <i class="icon ion-gear-a"></i>
+      Settings
+    </a>
+  </div>
+</body>
 </html>

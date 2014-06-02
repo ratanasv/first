@@ -8,7 +8,9 @@ angular.module( 'ngBoilerplate', [
   'vir.secure',
   'vir.picloader',
   'vir.purchase',
-  'vir.countdown'
+  'vir.countdown',
+  'vir.settings',
+  'ionic'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
@@ -24,7 +26,6 @@ angular.module( 'ngBoilerplate', [
       $scope.pageTitle = toState.data.pageTitle + ' | KEC Online Order' ;
     }
   });
-})
-
-;
+  $scope.settings = {};
+});
 

@@ -13,7 +13,7 @@ function computeOrderKey(orderNumber) {
 	return 'order:' + orderNumber;
 }
 
-function errorCallback(res, errorMessage) {
+function errorCallback(res, errorMessage, winston) {
 	winston.error(errorMessage);
 	res.send(500);
 }
@@ -22,17 +22,17 @@ function orderCounterCallback(res, payload, winston) {
 	return function(err, orderNumber) {
 		var key = computeOrderKey(orderNumber);
 		if (err) {
-			return errorCallback(res, err);
+			return errorCallback(res, err, winston);
 		}
 
 		redisClient.set(key, JSON.stringify(payload), function(err, redisResponse) {
 			if (err) {
-				return errorCallback(res, err);
+				return errorCallback(res, err, winston);
 			}
 
 			redisClient.expire(key, TTL, function(err, redisResponse) {
 				if (err) {
-					return errorCallback(res, err);
+					return errorCallback(res, err, winston);
 				}
 				res.send(200, JSON.stringify({
 					deliveryTime: payload.deliveryTime
