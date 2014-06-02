@@ -3,8 +3,13 @@
 </div>
 <ion-content style='padding-top: 60px;'>
 <div class='list'>
+	<div class="item item-input-inset">
+		<label class="item-input-wrapper">
+			<input type="text" placeholder="Name" ng-model='customer.name'>
+		</label>
+	</div>
 
-	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right' ng-click='toggleSelection(key)' >
+	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right fade-in' ng-click='toggleSelection(key)' >
 		<img ng-src='{{value.image}}'>
 		<h2>{{value.name}}</h2>
 		<h3> ${{value.cost}}</h3>
@@ -13,6 +18,7 @@
 	</div>
 
 </div>
+
 </ion-content>
 
 
