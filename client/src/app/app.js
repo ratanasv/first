@@ -27,5 +27,6 @@ angular.module( 'ngBoilerplate', [
     }
   });
   $scope.settings = {};
+  $scope.selectedItems = [];
 });
 

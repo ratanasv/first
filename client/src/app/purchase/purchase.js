@@ -42,7 +42,6 @@ angular.module('vir.purchase', [
 			cost: 6.12
 		}
 	};
-	$scope.selectedItems = [];
 	
 	$scope.toggleSelection = function(id) {
 		if ($scope.items[id].selected === undefined) {
