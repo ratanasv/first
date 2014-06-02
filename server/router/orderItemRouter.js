@@ -4,14 +4,12 @@ var mongolabURL = 'https://api.mongolab.com/api/1/databases/'+DATABASE+'/collect
 var config = require('../../config/config');
 var redis = require('redis');
 var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
+var computeOrderKey = require('../lib/redisKeyCompute').computeOrderKey;
+var computeCustomerKey = require('../lib/redisKeyCompute').computeCustomerKey;
 
 var ORDER_COUNTER = 'order.counter';
 var INFLIGHT_ITEMS = 'inflight.items';
 var TTL = 60 * 60 * 1; //one hour
-
-function computeOrderKey(orderNumber) {
-	return 'order:' + orderNumber;
-}
 
 function errorCallback(res, errorMessage, winston) {
 	winston.error(errorMessage);
@@ -20,12 +18,12 @@ function errorCallback(res, errorMessage, winston) {
 
 function orderCounterCallback(res, payload, winston) {
 	return function(err, orderNumber) {
-		var key = computeOrderKey(orderNumber);
+		var orderKey = computeOrderKey(orderNumber);
 		if (err) {
 			return errorCallback(res, err, winston);
 		}
 
-		redisClient.set(key, JSON.stringify(payload), 'ex', TTL, function(err, redisResponse) {
+		redisClient.set(orderKey, JSON.stringify(payload), 'ex', TTL, function(err, redisResponse) {
 			if (err) {
 				return errorCallback(res, err, winston);
 			}
@@ -34,6 +32,7 @@ function orderCounterCallback(res, payload, winston) {
 				deliveryTime: payload.deliveryTime
 			}));
 		});
+		redisClient.set(computeCustomerKey(payload.customer), orderKey, 'ex', TTL);
 	}
 }
 

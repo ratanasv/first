@@ -22,19 +22,36 @@ angular.module('vir.countdown', [
 })
 
 .controller('CountdownCtrl', function($scope, $http) {
+	if (!$scope.settings.name || $scope.settings.name.length === 0) {
+		return alert('input valid name');
+	}
+
 	var socket = new WebSocket('wss://localhost:443');
-	var deliveryTime = new Date().getTime() + (1000*40);
+	var deliveryTime = 0;
 	socket.onopen = function() {
-		socket.send(JSON.stringify({
-			customer: 'Test Customer'
-		}));
+		socket.send(JSON.stringify(
+			{
+				method: 'getDeliveryTime',
+				params: {
+					customer: $scope.settings.name
+				}
+			}
+		));
 	};
 	socket.onmessage = function(message) {
-		var response = JSON.parse(message.data);
-		if (response.deliveryTime) {
-			deliveryTime = response.deliveryTime;
-			$scope.$apply();
+		var messageObject = JSON.parse(message.data);
+		if (messageObject.code !== 200) {
+			alert('error: ' + messageObject.header);
+			return 0;
 		}
+
+		if (!messageObject.body.deliveryTime) {
+			alert('error: no delivery time');
+			return 0;
+		}
+
+		deliveryTime = messageObject.body.deliveryTime;
+		$scope.$apply();
 	};
 	setInterval(function() {
 		$scope.timeRemaining = (deliveryTime - new Date().getTime())/1000;
