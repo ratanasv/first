@@ -6,6 +6,7 @@ var computeOrderKey = require('./redisKeyCompute').computeOrderKey;
 var computeCustomerKey = require('./redisKeyCompute').computeCustomerKey;
 var winston = require('./initWinston').winston;
 var TTL = require('./redisKeyCompute').TTL;
+var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER
 
 function handleGetDeliveryTime(params, ws) {
 	var customer = params.customer;
@@ -47,18 +48,18 @@ function handleGetDeliveryTime(params, ws) {
 
 			subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
 			subscriber.on('subscribe', function(channel, count) {
-				winston.log(customer + ' subscribes to ' + customerChannel);
+				winston.info(customer + ' subscribes to ' + customerChannel);
 			});
 			subscriber.on('message', function(channel, newDeliveryTime) {
 				var newOrderInfo = orderInfo;
 				if (channel !== customerChannel) {
 					return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
 				}
-				if (isNan(newDeliveryTime)) {
+				if (isNaN(newDeliveryTime)) {
 					return winston.error(newDeliveryTime + ' is not a number');
 				}
 
-				winston.log(orderKey + ' has new deliveryTime ' + newDeliveryTime);
+				winston.info(orderKey + ' has new deliveryTime ' + newDeliveryTime);
 				newOrderInfo.deliveryTime = newDeliveryTime;
 				redisClient.set(orderKey, JSON.stringify(newOrderInfo), 'ex', TTL, function(err) {
 					writeWS(ws, 200, '', {
@@ -67,6 +68,12 @@ function handleGetDeliveryTime(params, ws) {
 				});			
  			});
 			subscriber.subscribe(customerChannel);
+
+			ws.on('close', function() {
+				winston.info(customer + ' unsubscribe from ' + customerChannel)
+				subscriber.unsubscribe();
+				subscriber.end();
+			});
 		});
 	});
 }
@@ -84,7 +91,7 @@ module.exports = function(httpsServer) {
 	websocketServer.on('connection', function(ws) {
 		ws.on('message', function(message) {
 			var messageObject = JSON.parse(message);
-			winston.log(message);
+			winston.info(message);
 			if (!messageObject.method) {
 				return writeWS(ws, 400, 'no request method', {});
 			}
