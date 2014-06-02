@@ -25,19 +25,14 @@ function orderCounterCallback(res, payload, winston) {
 			return errorCallback(res, err, winston);
 		}
 
-		redisClient.set(key, JSON.stringify(payload), function(err, redisResponse) {
+		redisClient.set(key, JSON.stringify(payload), 'ex', TTL, function(err, redisResponse) {
 			if (err) {
 				return errorCallback(res, err, winston);
 			}
 
-			redisClient.expire(key, TTL, function(err, redisResponse) {
-				if (err) {
-					return errorCallback(res, err, winston);
-				}
-				res.send(200, JSON.stringify({
-					deliveryTime: payload.deliveryTime
-				}));
-			});
+			res.send(200, JSON.stringify({
+				deliveryTime: payload.deliveryTime
+			}));
 		});
 	}
 }
