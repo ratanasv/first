@@ -15,6 +15,7 @@ var picLoaderRouter = require('./router/picLoaderRouter.js');
 var orderItemRouter = require('./router/orderItemRouter.js');
 var winstonLogger = require('./lib/winstonLogger');
 var initWebsocket = require('./lib/initWebsocket');
+var cors = require('cors');
 
 var httpsServer = https.createServer({
     key: privateKey,
@@ -22,13 +23,6 @@ var httpsServer = https.createServer({
 }, app);
 
 configurePassport(passport);
-
-function allowCrossDomain(req, res, next) {
-	res.header('Access-Control-Allow-Origin', 'https://localhost | github.io');
-	res.header('Access-Control-Allow-Methods', 'GET,POST');
-	res.header('Access-Control-Allow-Headers', 'Content-Type');
-	next();
-}
 
 app.configure(function() {
 	app.use(express.bodyParser());
@@ -40,7 +34,7 @@ app.configure(function() {
 	app.use(flash());
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.use(allowCrossDomain);
+	app.use(cors());
 	app.use(express.static(__dirname + '/../client/build'));
 });
 
