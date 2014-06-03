@@ -69,6 +69,27 @@ module.exports = function(winston) {
 				}
 				ordersInfo.push(JSON.parse(orderInfo));
 			});
+			callback(null, ordersKeysList, ordersInfo);
+		});
+	}
+
+	function retrieveDeliveryTime(ordersKeysList, ordersInfo, callback) {
+		var multi = redisClient.multi();
+		ordersKeysList.forEach(function(orderKey, index) {
+			var deliveryTimeKey = orderKey + ':deliveryTime';
+			multi.get(deliveryTimeKey);
+		});
+		multi.exec(function (err, replies) {
+			if (err) {
+				return callback('batch orders deliveryTime retrieval failed');
+			}
+
+			replies.forEach(function(deliveryTime, index) {
+				if (deliveryTime === null) {
+					return callback('item #' + index + ' has no deliveryTime');
+				}
+				ordersInfo[index].deliveryTime = deliveryTime;
+			});
 			callback(null, ordersInfo);
 		});
 	}
@@ -77,7 +98,7 @@ module.exports = function(winston) {
 	return function handleGetInFlightOrders(params, ws) {
 
 		async.waterfall(
-			[retrieveInFlightOrders, retrieveOrdersKeys, retrieveOrdersInfo], 
+			[retrieveInFlightOrders, retrieveOrdersKeys, retrieveOrdersInfo, retrieveDeliveryTime], 
 			function(err, result) {
 				if (err) {
 					winston.error(err);
