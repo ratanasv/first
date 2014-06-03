@@ -10,7 +10,7 @@ var computeDeliveryTimeKey = require('../lib/redisKeyCompute').computeDeliveryTi
 
 var ORDER_COUNTER = require('../lib/redisKeyCompute').ORDER_COUNTER;
 var TTL = require('../lib/redisKeyCompute').TTL;
-
+var INFLIGHT_ORDERS = require('../lib/redisKeyCompute').INFLIGHT_ORDERS;
 
 
 
@@ -32,6 +32,17 @@ module.exports = function(app, winston) {
 		}
 	}
 
+	function writeToInFlightQueue(res, orderNumber, deliveryTime, newOrder) {
+		return function(err, redisResponse) {
+			if (err) {
+				return errorCallback(res, err);
+			}
+
+			redisClient.rpush(INFLIGHT_ORDERS, computeCustomerKey(newOrder.customer), 
+				notifyClient(res, deliveryTime));
+		}
+	}
+
 	function writeOrderToCustomer(res, orderNumber, deliveryTime, newOrder) {
 		return function(err, redisResponse) {
 			var orderKey = computeOrderKey(orderNumber);
@@ -40,7 +51,7 @@ module.exports = function(app, winston) {
 			}
 
 			redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL,
-				notifyClient(res, deliveryTime));			
+				writeToInFlightQueue(res, orderNumber, deliveryTime, newOrder));			
 		}
 	}
 

@@ -7,14 +7,10 @@ var computeCustomerKey = require('./redisKeyCompute').computeCustomerKey;
 var winston = require('./initWinston').winston;
 var TTL = require('./redisKeyCompute').TTL;
 var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER;
+var INFLIGHT_ORDERS = require('./redisKeyCompute').INFLIGHT_ORDERS;
+var handleGetInFlightOrders = require('./handleGetInFlightOrders')(winston);
+var writeWS = require('./writeWS');
 
-function writeWS(ws, code, header, body) {
-	ws.send(JSON.stringify({
-		code: code,
-		header: header,
-		body: body
-	}));
-}
 
 function handleGetDeliveryTime(params, ws) {
 	var customer = params.customer;
@@ -97,6 +93,7 @@ function handleGetDeliveryTime(params, ws) {
 	redisClient.get(customerKey, queryDeliveryTime);
 }
 
+
 module.exports = function(httpsServer) {
 	var websocketServer = new WebsocketServer({server:httpsServer});
 	websocketServer.on('connection', function(ws) {
@@ -112,8 +109,8 @@ module.exports = function(httpsServer) {
 
 			if (messageObject.method === 'getDeliveryTime') {
 				handleGetDeliveryTime(messageObject.params, ws);
-			} else if (messageObject.method === 'setDeliveryTime') {
-
+			} else if (messageObject.method === 'getInFlightOrders') {
+				handleGetInFlightOrders(messageObject.params, ws);
 			} else {
 				writeWS(ws, 400, 'invalid request method', {});
 			}
