@@ -10,39 +10,69 @@ var computeCustomerKey = require('../lib/redisKeyCompute').computeCustomerKey;
 var ORDER_COUNTER = require('../lib/redisKeyCompute').ORDER_COUNTER;
 var TTL = require('../lib/redisKeyCompute').TTL;
 
-function errorCallback(res, errorMessage, winston) {
-	winston.error(errorMessage);
-	res.send(500);
-}
 
-function orderCounterCallback(res, newOrder, winston) {
-	return function(err, orderNumber) {
-		var orderKey = computeOrderKey(orderNumber);
-		if (err) {
-			return errorCallback(res, err, winston);
-		}
 
-		redisClient.set(orderKey, JSON.stringify(newOrder), 'ex', TTL, function(err, redisResponse) {
+
+module.exports = function(app, winston) {
+	function errorCallback(res, errorMessage) {
+		winston.error(errorMessage);
+		res.send(500);
+	}
+
+	function notifyClient(res, deliveryTime) {
+		return function(err, redisResponse) {
 			if (err) {
-				return errorCallback(res, err, winston);
+				return errorCallback(res, err);
 			}
 
 			res.send(200, JSON.stringify({
-				deliveryTime: newOrder.deliveryTime
+				deliveryTime: deliveryTime
 			}));
-		});
-
-		redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL);
+		}
 	}
-}
 
-module.exports = function(app, winston) {
+	function writeOrderToCustomer(res, orderNumber, deliveryTime, newOrder) {
+		return function(err, redisResponse) {
+			var orderKey = computeOrderKey(orderNumber);
+			if (err) {
+				return errorCallback(res, err);
+			}
+
+			redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL,
+				notifyClient(res, deliveryTime));			
+		}
+	}
+
+	function writeDeliveryTime(res, orderNumber, deliveryTime, newOrder) {
+		return function(err, redisResponse) {
+			if (err) {
+				return errorCallback(res, err);
+			}
+
+			redisClient.set(computeDeliveryTimeKey(orderNumber), deliveryTime, 'ex', TTL,
+				writeOrderToCustomer(res, orderNumber, newOrder));
+		}
+	}
+
+	function orderCounterCallback(res, newOrder, deliveryTime) {
+		return function(err, orderNumber) {
+			var orderKey = computeOrderKey(orderNumber);
+			if (err) {
+				return errorCallback(res, err);
+			}
+
+			redisClient.set(orderKey, JSON.stringify(newOrder), 'ex', TTL, 
+				writeDeliveryTime(res, orderNumber, deliveryTime, newOrder));
+		}
+	}
+
 	app.get('/item', function(req, res) {
 		res.send(200, 'pistachio');
 	});
 
 	app.post('/item', function(req, res) {
 		var newOrder = req.body;
+		var deliveryTime;
 
 		if (!newOrder) {
 			return res.send(400, 'no body in the request');
@@ -58,9 +88,9 @@ module.exports = function(app, winston) {
 		}
 
 		newOrder.orderTime = new Date().getTime();
-		newOrder.deliveryTime = newOrder.orderTime + (1000 * 60 * 2);
+		deliveryTime = newOrder.orderTime + (1000 * 60 * 2);
 
-		redisClient.incr(ORDER_COUNTER, orderCounterCallback(res, newOrder, winston));
+		redisClient.incr(ORDER_COUNTER, orderCounterCallback(res, newOrder, deliveryTime));
 		
 	});
 

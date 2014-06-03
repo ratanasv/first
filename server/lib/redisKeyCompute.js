@@ -7,6 +7,10 @@ module.exports = {
 		return customer.replace(/ /g, '.');
 	},
 
+	computeDeliveryTimeKey: function(orderNumber) {
+		return computeOrderKey(orderNumber) + ':deliveryTime';
+	}
+
 	TTL: 60 * 60 * 1,
 	ORDER_COUNTER: 'ORDER.COUNTER',
 	INFLIGHT_ORDERS: 'INFLIGHT.ORDERS',
