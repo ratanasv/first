@@ -2,7 +2,7 @@ var LocalStrategy = require('passport-local').Strategy;
 
 var users = [
 	{ nickname: 'khr', username: 'khronos', password: 'pass', number: 123},
-	{ nickname: 'the', username: 'theory', password: '1234', number: 281928},
+	{ nickname: 'the', username: 'theory', password: '1234', number: 281928}
 ];
 
 function findByUsername(username, callback) {
@@ -21,7 +21,7 @@ module.exports = function(passport) {
 				console.log('find result: ' + user);
 				if (err) { return done(err); }
 				if (!user) { return done(null, false, {message: 'unknown user'}); }
-				if (user.password != password) {
+				if (user.password !== password) {
 					return done(null, false, {message: 'wrong password'});
 				}
 

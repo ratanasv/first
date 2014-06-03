@@ -8,8 +8,8 @@ module.exports = {
 	},
 
 	computeDeliveryTimeKey: function(orderNumber) {
-		return computeOrderKey(orderNumber) + ':deliveryTime';
-	}
+		return 'order:' + orderNumber + ':deliveryTime';
+	},
 
 	TTL: 60 * 60 * 1,
 	ORDER_COUNTER: 'ORDER.COUNTER',

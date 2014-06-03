@@ -6,7 +6,15 @@ var computeOrderKey = require('./redisKeyCompute').computeOrderKey;
 var computeCustomerKey = require('./redisKeyCompute').computeCustomerKey;
 var winston = require('./initWinston').winston;
 var TTL = require('./redisKeyCompute').TTL;
-var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER
+var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER;
+
+function writeWS(ws, code, header, body) {
+	ws.send(JSON.stringify({
+		code: code,
+		header: header,
+		body: body
+	}));
+}
 
 function handleGetDeliveryTime(params, ws) {
 	var customer = params.customer;
@@ -66,24 +74,16 @@ function handleGetDeliveryTime(params, ws) {
 						deliveryTime: newDeliveryTime
 					});
 				});			
- 			});
+			});
 			subscriber.subscribe(customerChannel);
 
 			ws.on('close', function() {
-				winston.info(customer + ' unsubscribe from ' + customerChannel)
+				winston.info(customer + ' unsubscribe from ' + customerChannel);
 				subscriber.unsubscribe();
 				subscriber.end();
 			});
 		});
 	});
-}
-
-function writeWS(ws, code, header, body) {
-	ws.send(JSON.stringify({
-		code: code,
-		header: header,
-		body: body
-	}));
 }
 
 module.exports = function(httpsServer) {

@@ -6,6 +6,7 @@ var redis = require('redis');
 var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
 var computeOrderKey = require('../lib/redisKeyCompute').computeOrderKey;
 var computeCustomerKey = require('../lib/redisKeyCompute').computeCustomerKey;
+var computeDeliveryTimeKey = require('../lib/redisKeyCompute').computeDeliveryTimeKey;
 
 var ORDER_COUNTER = require('../lib/redisKeyCompute').ORDER_COUNTER;
 var TTL = require('../lib/redisKeyCompute').TTL;
@@ -50,7 +51,7 @@ module.exports = function(app, winston) {
 			}
 
 			redisClient.set(computeDeliveryTimeKey(orderNumber), deliveryTime, 'ex', TTL,
-				writeOrderToCustomer(res, orderNumber, newOrder));
+				writeOrderToCustomer(res, orderNumber, deliveryTime, newOrder));
 		}
 	}
 
