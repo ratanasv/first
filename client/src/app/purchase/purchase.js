@@ -56,7 +56,7 @@ angular.module('vir.purchase', [
 			return alert('input valid name');
 		}
 
-		$http.post('/item', {
+		$http.post('https://128.193.36.250/item', {
 			customer: $scope.settings.name,
 			items: $scope.selectedItems
 		})

@@ -23,6 +23,12 @@ var httpsServer = https.createServer({
 
 configurePassport(passport);
 
+function allowCrossDomain(req, res, next) {
+	res.header('Access-Control-Allow-Origin', 'https://localhost | github.io');
+	res.header('Access-Control-Allow-Methods', 'GET,POST');
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
+	next();
+}
 
 app.configure(function() {
 	app.use(express.bodyParser());
@@ -34,6 +40,7 @@ app.configure(function() {
 	app.use(flash());
 	app.use(passport.initialize());
 	app.use(passport.session());
+	app.use(allowCrossDomain);
 	app.use(express.static(__dirname + '/../client/build'));
 });
 
