@@ -22,6 +22,8 @@ angular.module('vir.countdown', [
 })
 
 .controller('CountdownCtrl', function($scope, $http) {
+	var timerId;
+
 	if (!$scope.settings.name || $scope.settings.name.length === 0) {
 		return alert('input valid name');
 	}
@@ -42,6 +44,7 @@ angular.module('vir.countdown', [
 		var messageObject = JSON.parse(message.data);
 		if (messageObject.code !== 200) {
 			alert('error: ' + messageObject.header);
+			clearInterval(timerId);
 			return 0;
 		}
 
@@ -53,7 +56,7 @@ angular.module('vir.countdown', [
 		deliveryTime = messageObject.body.deliveryTime;
 		$scope.$apply();
 	};
-	setInterval(function() {
+	timerId = setInterval(function() {
 		$scope.timeRemaining = (deliveryTime - new Date().getTime())/1000;
 		$scope.$apply();
 	}, 1000);
