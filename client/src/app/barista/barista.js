@@ -1,4 +1,4 @@
-angular.module('vir.countdown', [
+angular.module('vir.barista', [
 	'ui.router',
 	'templates-app',
 	'templates-common',
@@ -27,25 +27,21 @@ angular.module('vir.countdown', [
 	socket.onopen = function() {
 		socket.send(JSON.stringify(
 			{
-				method: 'getInFlightOrders'
+				method: 'getInFlightOrders',
+				params: {}
 			}
 		));
 	};
 	socket.onmessage = function(message) {
 		var messageObject = JSON.parse(message.data);
+		var payload = messageObject.body;
 		if (messageObject.code !== 200) {
 			alert('error: ' + messageObject.header);
-			clearInterval(timerId);
 			return 0;
 		}
 
-		
-		
+		$scope.orders = payload.orders;
 		$scope.$apply();
 	};
-	timerId = setInterval(function() {
-		
-		$scope.$apply();
-	}, 1000);
 });
 
