@@ -10,6 +10,7 @@ angular.module( 'ngBoilerplate', [
   'vir.purchase',
   'vir.countdown',
   'vir.settings',
+  'vir.barista',
   'ionic'
 ])
 
