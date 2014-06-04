@@ -20,7 +20,11 @@ module.exports = function(app, winston) {
 		res.send(500);
 	}
 
-	function notifyClient(res, deliveryTime) {
+	function notifyBarista(newOrder) {
+		redisClient.publish(INFLIGHT_ORDERS, newOrder.customer);
+	}
+
+	function notifyClient(res, deliveryTime, newOrder) {
 		return function(err, redisResponse) {
 			if (err) {
 				return errorCallback(res, err);
@@ -29,6 +33,8 @@ module.exports = function(app, winston) {
 			res.send(200, JSON.stringify({
 				deliveryTime: deliveryTime
 			}));
+
+			notifyBarista(newOrder);
 		}
 	}
 
@@ -39,7 +45,7 @@ module.exports = function(app, winston) {
 			}
 
 			redisClient.rpush(INFLIGHT_ORDERS, computeCustomerKey(newOrder.customer), 
-				notifyClient(res, deliveryTime));
+				notifyClient(res, deliveryTime, newOrder));
 		}
 	}
 

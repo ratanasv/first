@@ -43,7 +43,8 @@ module.exports = function(winston) {
 			}
 
 			replies.forEach(function(orderKey, index) {
-				if (orderKey === null) {
+				if (orderKey === null || orderKey === NO_INFLIGHT_ORDER) {
+					winston.warn(index + ' doesnt exist, deleting automatically');
 					redisClient.lrem(INFLIGHT_ORDERS, 0, customersList[index]);
 				} else {
 					inFlightOrdersKeys.push(orderKey);
@@ -95,11 +96,51 @@ module.exports = function(winston) {
 		});
 	}
 
+	function subscribeToInFlightList(ws) {
+		return function(ordersInfo, callback) {
+			subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
+			subscriber.on('subscribe', function(channel, count) {
+				winston.info('barista subscribes to ' + INFLIGHT_ORDERS);
+			});
+			subscriber.on('message', function(channel, newCustomer) {
+				if (channel !== INFLIGHT_ORDERS) {
+					return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
+				}
+
+				winston.info('new customer to the list ' + newCustomer);
+
+				async.waterfall([
+					function(callback) {
+						callback(null, [newCustomer])
+					},
+					retrieveOrdersKeys, 
+					retrieveOrdersInfo
+				], function(err, result) {
+					callback(null, result);
+				});
+			});
+			subscriber.subscribe(INFLIGHT_ORDERS);
+
+			ws.on('close', function() {
+				winston.info('barista unsubscribe from ' + INFLIGHT_ORDERS);
+				subscriber.unsubscribe();
+				subscriber.end();
+			});
+
+			callback(null, ordersInfo);
+		}
+	}
+
 
 	return function handleGetInFlightOrders(params, ws) {
 
-		async.waterfall(
-			[retrieveInFlightOrders, retrieveOrdersKeys, retrieveOrdersInfo, retrieveDeliveryTime], 
+		async.waterfall([
+			retrieveInFlightOrders, 
+			retrieveOrdersKeys, 
+			retrieveOrdersInfo, 
+			retrieveDeliveryTime,
+			subscribeToInFlightList(ws)
+		], 
 			function(err, result) {
 				if (err) {
 					winston.error(err);
