@@ -53,7 +53,7 @@ angular.module('vir.barista', [
 			if (found === -1) {
 				$scope.orders.push(payload.orders[i]);
 			} else {
-				$scope.orders[found].deliveryTime = payload[i].deliveryTime;
+				$scope.orders[found].deliveryTime = payload.orders[i].deliveryTime;
 			}
 		});
 		$scope.$apply();

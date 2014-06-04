@@ -1,4 +1,10 @@
 <ion-content style='padding-top: 44px;'>
+<div ng-show='orders.length === 0' class='card'>
+	<div class='item item-text-wrap'>
+		No orders pending...
+	</div>
+</div>
+
 <div ng-repeat='order in orders' class='card'>
 	<div class='item item-text-wrap'>
 		{{order.customer}}, {{order.items}}, {{order.deliveryTime}}

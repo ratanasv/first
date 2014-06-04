@@ -1,7 +1,10 @@
 <ion-content style='padding-top: 44px;'>
 <div class="card">
-	<div class="item item-text-wrap">
-		Your order will be ready in {{timeRemaining | number : 0}}.
+	<div class="item item-text-wrap" ng-show='timeRemaining > 0'>
+		Your order will be ready in {{timeRemaining | number : 0}} seconds.
+	</div>
+	<div class="item item-text-wrap" ng-show='timeRemaining < 0'>
+		Your order is READY!
 	</div>
 </div>
 
