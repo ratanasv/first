@@ -61,7 +61,6 @@ angular.module('vir.purchase', [
 			items: $scope.selectedItems
 		})
 		.success(function(data, status, headers, config) {
-			alert('delivery: ' + data.deliveryTime);
 			$location.url('/countdown');
 		})
 		.error(function(data, status, headers, config) {

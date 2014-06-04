@@ -98,20 +98,20 @@ module.exports = function(winston) {
 
 	function subscribeToInFlightList(ws) {
 		return function(ordersInfo, callback) {
-			subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
+			var subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
 			subscriber.on('subscribe', function(channel, count) {
 				winston.info('barista subscribes to ' + INFLIGHT_ORDERS);
 			});
 			subscriber.on('message', function(channel, newCustomer) {
 				if (channel !== INFLIGHT_ORDERS) {
-					return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
+					return winston.error('barista shouldnt be subscribed to ' + channel);
 				}
 
 				winston.info('new customer to the list ' + newCustomer);
 
 				async.waterfall([
 					function(callback) {
-						callback(null, [newCustomer])
+						callback(null, [newCustomer]);
 					},
 					retrieveOrdersKeys, 
 					retrieveOrdersInfo,
@@ -129,7 +129,7 @@ module.exports = function(winston) {
 			});
 
 			callback(null, ordersInfo);
-		}
+		};
 	}
 
 

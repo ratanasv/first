@@ -12,81 +12,72 @@ var ORDER_COUNTER = require('../lib/redisKeyCompute').ORDER_COUNTER;
 var TTL = require('../lib/redisKeyCompute').TTL;
 var INFLIGHT_ORDERS = require('../lib/redisKeyCompute').INFLIGHT_ORDERS;
 
+var async = require('async');
 
 
 module.exports = function(app, winston) {
-	function errorCallback(res, errorMessage) {
-		winston.error(errorMessage);
-		res.send(500);
-	}
-
-	function notifyBarista(newOrder) {
+	function notifyBarista(newOrder, deliveryTime , callback) {
 		redisClient.publish(INFLIGHT_ORDERS, newOrder.customer);
+		callback(null, deliveryTime);
 	}
 
-	function notifyClient(res, deliveryTime, newOrder) {
-		return function(err, redisResponse) {
+	function writeToInFlightQueue(newOrder, deliveryTime, callback) {
+		redisClient.rpush(INFLIGHT_ORDERS, computeCustomerKey(newOrder.customer), 'ex', TTL,
+			function(err, result) {
+				if (err) {
+					callback(err);
+				}
+
+				callback(null, newOrder, deliveryTime);
+			}	
+		);
+	}
+
+
+	function writeOrderToCustomer(orderKey, newOrder, deliveryTime, callback) {
+		redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL, 
+			function(err, result) {
+				if (err) {
+					callback(err);
+				}
+
+				callback(null, newOrder, deliveryTime);
+			}
+		);
+	}
+
+	function writeDeliveryTime(orderKey, newOrder, deliveryTime, callback) {
+		redisClient.set(orderKey + ':deliveryTime', deliveryTime, 'ex', TTL, function(err, result) {
 			if (err) {
-				return errorCallback(res, err);
+				callback(err);
 			}
 
-			res.send(200, JSON.stringify({
-				deliveryTime: deliveryTime
-			}));
-
-			notifyBarista(newOrder);
-		}
+			callback(null, orderKey, newOrder, deliveryTime);
+		});
 	}
 
-	function writeToInFlightQueue(res, orderNumber, deliveryTime, newOrder) {
-		return function(err, redisResponse) {
+
+	function writeOrderInfo(orderKey, newOrder, deliveryTime, callback) {
+		redisClient.set(orderKey, JSON.stringify(newOrder), 'ex', TTL, function(err, result) {
 			if (err) {
-				return errorCallback(res, err);
+				callback(err);
 			}
 
-			redisClient.rpush(INFLIGHT_ORDERS, computeCustomerKey(newOrder.customer), 
-				notifyClient(res, deliveryTime, newOrder));
-		}
+			callback(null, orderKey, newOrder, deliveryTime);
+		});
 	}
 
-	function writeOrderToCustomer(res, orderNumber, deliveryTime, newOrder) {
-		return function(err, redisResponse) {
+	function incrementOrderCounter(newOrder, deliveryTime, callback) {
+		redisClient.incr(ORDER_COUNTER, function(err, orderNumber) {
 			var orderKey = computeOrderKey(orderNumber);
 			if (err) {
-				return errorCallback(res, err);
+				return callback(err);
 			}
 
-			redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL,
-				writeToInFlightQueue(res, orderNumber, deliveryTime, newOrder));			
-		}
+			callback(null, orderKey, newOrder, deliveryTime)
+		});
 	}
 
-	function writeDeliveryTime(res, orderNumber, deliveryTime, newOrder) {
-		return function(err, redisResponse) {
-			if (err) {
-				return errorCallback(res, err);
-			}
-
-			redisClient.set(computeDeliveryTimeKey(orderNumber), deliveryTime, 'ex', TTL,
-				writeOrderToCustomer(res, orderNumber, deliveryTime, newOrder));
-		}
-	}
-
-	function orderCounterCallback(res, newOrder, deliveryTime) {
-		return function(err, orderNumber) {
-			var orderKey = computeOrderKey(orderNumber);
-			if (err) {
-				return errorCallback(res, err);
-			}
-
-			redisClient.set(orderKey, JSON.stringify(newOrder), 'ex', TTL, 
-				writeDeliveryTime(res, orderNumber, deliveryTime, newOrder));
-		}
-	}
-
-	app.get('/item', function(req, res) {
-		res.send(200, 'pistachio');
-	});
 
 	app.post('/item', function(req, res) {
 		var newOrder = req.body;
@@ -108,8 +99,26 @@ module.exports = function(app, winston) {
 		newOrder.orderTime = new Date().getTime();
 		deliveryTime = newOrder.orderTime + (1000 * 60 * 2);
 
-		redisClient.incr(ORDER_COUNTER, orderCounterCallback(res, newOrder, deliveryTime));
-		
+		async.waterfall([
+			function(callback) {
+				callback(null, newOrder, deliveryTime);
+			},
+			incrementOrderCounter,
+			writeOrderInfo,
+			writeDeliveryTime,
+			writeOrderToCustomer,
+			writeToInFlightQueue,
+			notifyBarista
+		], function(err, result) {
+			if (err) {
+				winston.error(err);
+				res.send(500);
+			}
+
+			res.send(200, JSON.stringify({
+				deliveryTime: deliveryTime
+			}));
+		});		
 	});
 
 
