@@ -28,7 +28,7 @@ angular.module('vir.countdown', [
 		return alert('input valid name');
 	}
 
-	var socket = new WebSocket('wss://128.193.36.250:443');
+	var socket = new WebSocket('ws://128.193.36.250:80');
 	var deliveryTime = 0;
 	socket.onopen = function() {
 		socket.send(JSON.stringify(

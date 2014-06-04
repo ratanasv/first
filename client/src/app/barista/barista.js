@@ -23,7 +23,10 @@ angular.module('vir.barista', [
 
 .controller('BaristaCtrl', ['$scope', 'findIndexOf', function($scope, findIndexOf) {
 	$scope.orders = [];
-	var socket = new WebSocket('wss://128.193.36.250:443');
+	var socket = new WebSocket('ws://128.193.36.250:80');
+	socket.onerror = function(error) {
+		alert(error);
+	};
 	socket.onopen = function() {
 		socket.send(JSON.stringify(
 			{

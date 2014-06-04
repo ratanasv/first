@@ -3,7 +3,7 @@
  */
 var config = require('../config/config');
 var fs = require('fs');
-var https = require('https');
+var http = require('http');
 var express = require('express');
 var privateKey = fs.readFileSync(config['SSL_KEY']);
 var certificate = fs.readFileSync(config['SSL_CERT']);
@@ -17,10 +17,7 @@ var winstonLogger = require('./lib/winstonLogger');
 var initWebsocket = require('./lib/initWebsocket');
 var cors = require('cors');
 
-var httpsServer = https.createServer({
-    key: privateKey,
-    cert: certificate
-}, app);
+var httpServer = http.createServer(app);
 
 configurePassport(passport);
 
@@ -67,7 +64,7 @@ app.post('oauth2callback', function(req, res) {
 });
 
 
-httpsServer.listen(config['SERVER_PORT']);
-initWebsocket(httpsServer);
+httpServer.listen(config['SERVER_PORT']);
+initWebsocket(httpServer);
 
 winstonLogger.winston.info('listening on port ' + config['SERVER_PORT'] + '...');

@@ -96,7 +96,9 @@ function handleGetDeliveryTime(params, ws) {
 
 
 module.exports = function(httpsServer) {
-	var websocketServer = new WebsocketServer({server:httpsServer});
+	var websocketServer = new WebsocketServer({
+		server: httpsServer
+	});
 	websocketServer.on('connection', function(ws) {
 		ws.on('message', function(message) {
 			var messageObject = JSON.parse(message);
