@@ -59,7 +59,7 @@ module.exports = function(winston) {
 					winston.error(err);
 					return writeWS(ws, 500, err, {});
 				}
-				writeWS(ws, 200, '', result);
+				//intentionally don't write result back to client.
 			}
 		);
 	};
