@@ -1,4 +1,3 @@
-var WebsocketServer = require('ws').Server;
 var config = require('../../config/config');
 var redis = require('redis');
 var redisClient = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
@@ -9,9 +8,12 @@ var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER;
 var INFLIGHT_ORDERS = require('./redisKeyCompute').INFLIGHT_ORDERS;
 var writeWS = require('./writeWS');
 var async = require('async');
+var handlerHelperInitFunc = require('./handlerHelper');
+
 
 
 module.exports = function(winston) {
+	handlerHelper = handlerHelperInitFunc(winston, redisClient);
 
 	function retrieveInFlightOrders(callback) {
 		redisClient.lrange(INFLIGHT_ORDERS, 0, -1, function(err, customersList) {
@@ -28,71 +30,6 @@ module.exports = function(winston) {
 			});
 
 			callback(null, customersList);
-		});
-	}
-
-	function retrieveOrdersKeys(customersList, callback) {
-		var multi = redisClient.multi();
-		var inFlightOrdersKeys = [];
-		customersList.forEach(function(customer, index) {
-			multi.get(customer);
-		});
-		multi.exec(function (err, replies) {
-			if (err) {
-				return callback('batch orders keys retrieval failed');
-			}
-
-			replies.forEach(function(orderKey, index) {
-				if (orderKey === null || orderKey === NO_INFLIGHT_ORDER) {
-					winston.warn(index + ' doesnt exist, deleting automatically');
-					redisClient.lrem(INFLIGHT_ORDERS, 0, customersList[index]);
-				} else {
-					inFlightOrdersKeys.push(orderKey);
-				}
-			});
-			callback(null, inFlightOrdersKeys);
-		});
-	}
-
-	function retrieveOrdersInfo(ordersKeysList, callback) {
-		var multi = redisClient.multi();
-		var ordersInfo = [];
-		ordersKeysList.forEach(function(orderKey, index) {
-			multi.get(orderKey);
-		});
-		multi.exec(function (err, replies) {
-			if (err) {
-				return callback('batch orders info retrieval failed');
-			}
-
-			replies.forEach(function(orderInfo, index) {
-				if (orderInfo === null) {
-					return callback('item #' + index + ' has no order info.');
-				}
-				ordersInfo.push(JSON.parse(orderInfo));
-			});
-			callback(null, ordersInfo, ordersKeysList);
-		});
-	}
-
-	function retrieveDeliveryTime(ordersInfo, ordersKeysList, callback) {
-		var multi = redisClient.multi();
-		ordersKeysList.forEach(function(orderKey, index) {
-			var deliveryTimeKey = orderKey + ':deliveryTime';
-			multi.get(deliveryTimeKey);
-		});
-		multi.exec(function (err, replies) {
-			if (err) {
-				return callback('batch orders deliveryTime retrieval failed');
-			}
-
-			replies.forEach(function(deliveryTime, index) {
-				if (deliveryTime === null) {
-					return callback('item #' + index + ' has no deliveryTime');
-				}
-				ordersInfo[index].deliveryTime = deliveryTime;
-			});
-			callback(null, ordersInfo);
 		});
 	}
 
@@ -113,9 +50,9 @@ module.exports = function(winston) {
 					function(callback) {
 						callback(null, [newCustomer]);
 					},
-					retrieveOrdersKeys, 
-					retrieveOrdersInfo,
-					retrieveDeliveryTime
+					handlerHelper.retrieveOrdersKeys, 
+					handlerHelper.retrieveOrdersInfo,
+					handlerHelper.retrieveDeliveryTime
 				], function(err, result) {
 					callback(null, result);
 				});
@@ -137,9 +74,9 @@ module.exports = function(winston) {
 
 		async.waterfall([
 			retrieveInFlightOrders, 
-			retrieveOrdersKeys, 
-			retrieveOrdersInfo, 
-			retrieveDeliveryTime,
+			handlerHelper.retrieveOrdersKeys, 
+			handlerHelper.retrieveOrdersInfo, 
+			handlerHelper.retrieveDeliveryTime,
 			subscribeToInFlightList(ws)
 		], 
 			function(err, result) {

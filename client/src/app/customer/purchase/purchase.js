@@ -61,7 +61,7 @@ angular.module('vir.customer.purchase', [
 			items: $scope.selectedItems
 		})
 		.success(function(data, status, headers, config) {
-			$location.url('/countdown');
+			$location.url('/customer/countdown');
 		})
 		.error(function(data, status, headers, config) {
 			alert('error: ' + data);
