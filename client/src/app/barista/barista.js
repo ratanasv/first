@@ -86,6 +86,30 @@ angular.module('vir.barista', [
 
 		$scope.orders.splice(found, 1);
 	};
+
+	$scope.onMore = function(customer) {
+		socket.send(JSON.stringify(
+			{
+				method: 'setDT',
+				params: {
+					customer: customer,
+					dt: 30
+				}
+			}
+		));
+	};
+
+	$scope.onLess = function(customer) {
+		socket.send(JSON.stringify(
+			{
+				method: 'setDT',
+				params: {
+					customer: customer,
+					dt: -30
+				}
+			}
+		));
+	};
 }])
 
 .factory('findIndexOf', function() {

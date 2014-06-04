@@ -6,26 +6,22 @@
 </div>
 
 <div ng-repeat='order in orders' class='card'>
+	<div class='item item-divider'>
+		Name: {{order.customer}}
+	</div>
 	<div class='item item-text-wrap'>
-		<h4> Name: </h4>
-		{{order.customer}} 
-		<h4> Order: </h4>
-		<div ng-repeat='item in order.items'>
-		{{item}}
-		</div>, 
-		<h4> Time Left: </h4>
-		{{order.deliveryTime}}
-		<br>
-		<button class='button button-small button-positive' ng-click='onDone(order.customer)'>
-			Done
-		</button>
-		<button class='button button-small button-assertive' ng-click='onMore(order.customer)'>
-			+30
-		</button>
-		<button class='button button-small button-balanced' ng-click='onLess(order.customer)'>
-			-30
-		</button>
+		<h2 ng-repeat='item in order.items'>
+		{{item}} 
+		</h2> 
+		<div class='button-bar'>
+			<a class='button button-positive' ng-click='onDone(order.customer)'>Done</a>
+			<a class='button button-assertive' ng-click='onMore(order.customer)'>+30</a>
+			<a class='button button-balanced' ng-click='onLess(order.customer)'>-30</a>
+		</div>
 
+	</div>
+	<div class='item item-divider'>
+		Time Left: {{order.deliveryTime}} seconds
 	</div>
 </div>
 
