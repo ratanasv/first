@@ -9,6 +9,7 @@ var TTL = require('./redisKeyCompute').TTL;
 var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER;
 var INFLIGHT_ORDERS = require('./redisKeyCompute').INFLIGHT_ORDERS;
 var handleGetInFlightOrders = require('./handleGetInFlightOrders')(winston);
+var handleOrderDone = require('./handleOrderDone')(winston);
 var writeWS = require('./writeWS');
 
 
@@ -111,6 +112,8 @@ module.exports = function(httpsServer) {
 				handleGetDeliveryTime(messageObject.params, ws);
 			} else if (messageObject.method === 'getInFlightOrders') {
 				handleGetInFlightOrders(messageObject.params, ws);
+			} else if (messageObject.method === 'orderDone') {
+				handleOrderDone(messageObject.params, ws);
 			} else {
 				writeWS(ws, 400, 'invalid request method', {});
 			}

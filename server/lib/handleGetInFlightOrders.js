@@ -44,9 +44,10 @@ module.exports = function(winston) {
 
 			replies.forEach(function(orderKey, index) {
 				if (orderKey === null) {
-					callback('item #' + index + ' has no order key.');
+					redisClient.lrem(INFLIGHT_ORDERS, 0, customersList[index]);
+				} else {
+					inFlightOrdersKeys.push(orderKey);
 				}
-				inFlightOrdersKeys.push(orderKey);
 			});
 			callback(null, inFlightOrdersKeys);
 		});
