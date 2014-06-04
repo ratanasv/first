@@ -70,7 +70,7 @@ angular.module('vir.barista', [
 		));
 
 		var found = findIndexOf($scope.orders, function(element) {
-			if (order.customer === element.customer) {
+			if (customer === element.customer) {
 				return 1;
 			} else {
 				return 0;
