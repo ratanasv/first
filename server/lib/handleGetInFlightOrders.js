@@ -71,11 +71,11 @@ module.exports = function(winston) {
 				}
 				ordersInfo.push(JSON.parse(orderInfo));
 			});
-			callback(null, ordersKeysList, ordersInfo);
+			callback(null, ordersInfo, ordersKeysList);
 		});
 	}
 
-	function retrieveDeliveryTime(ordersKeysList, ordersInfo, callback) {
+	function retrieveDeliveryTime(ordersInfo, ordersKeysList, callback) {
 		var multi = redisClient.multi();
 		ordersKeysList.forEach(function(orderKey, index) {
 			var deliveryTimeKey = orderKey + ':deliveryTime';
@@ -114,7 +114,8 @@ module.exports = function(winston) {
 						callback(null, [newCustomer])
 					},
 					retrieveOrdersKeys, 
-					retrieveOrdersInfo
+					retrieveOrdersInfo,
+					retrieveDeliveryTime
 				], function(err, result) {
 					callback(null, result);
 				});
