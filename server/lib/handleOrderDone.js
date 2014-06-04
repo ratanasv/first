@@ -23,22 +23,41 @@ module.exports = function(winston) {
 		});
 	}
 
-	function setCustomerOrderDone(customer, callback) {
-		redisClient.set(computeCustomerKey(customer), NO_INFLIGHT_ORDER, 'ex', TTL,
-			function(err, result) {
+	function getSetCustomerOrderDone(customer, callback) {
+		redisClient.getset(computeCustomerKey(customer), NO_INFLIGHT_ORDER, 'ex', TTL,
+			function(err, prevOrderKey) {
 				if (err) {
+					winston.error(err);
 					callback('cannot set customerKey to done');
 				}
 
-				callback(null, customer);
+				if (prevOrderKey === NO_INFLIGHT_ORDER) {
+					callback(customer + ' didnt have pending order');
+				}
+
+				callback(null, customer, prevOrderKey);
 			}
 		);	
 	}
 
-	function notifyCustomer(customer, callback) {
-		redisClient.publish(computeCustomerKey(customer), BIG_NEGATIVE_DT);
+	function getSetDeliveryTimeNow(customer, prevOrderKey, callback) {
+		var timeNow = new Date().getTime();
+		redisClient.getset(prevOrderKey + ':deliveryTime', timeNow, 'ex', TTL, 
+			function(err, prevDeliveryTime) {
+				if (err) {
+					callback('cannot getSet deliveryTime');
+				}
+
+				callback(null, customer, timeNow - prevDeliveryTime);				
+			}
+		);
+	}
+
+	function notifyCustomer(customer, dt, callback) {
+		redisClient.publish(computeCustomerKey(customer), dt);
 		callback(null, {});
 	}
+
 
 	return function(params, ws) {
 		var customer = params.customer;
@@ -51,7 +70,8 @@ module.exports = function(winston) {
 				callback(null, customer);
 			}, 
 			removeCustomerFromQueue, 
-			setCustomerOrderDone, 
+			getSetCustomerOrderDone,
+			getSetDeliveryTimeNow, 
 			notifyCustomer
 		], 
 			function(err, result) {

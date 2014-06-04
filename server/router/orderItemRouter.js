@@ -82,6 +82,7 @@ module.exports = function(app, winston) {
 		redisClient.get(computeCustomerKey(newOrder.customer), function(err, orderNumber) {
 			if (orderNumber !== NO_INFLIGHT_ORDER && orderNumber !== null) {
 				callback(newOrder.customer + ' already has an outstanding order ' + orderNumber);
+				winston.error('this still gets executed!!!!');
 			}
 
 			callback(null, newOrder, deliveryTime);
