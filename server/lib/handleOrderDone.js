@@ -16,7 +16,7 @@ module.exports = function(winston) {
 	function removeCustomerFromQueue(customer, callback) {
 		redisClient.lrem(INFLIGHT_ORDERS, 0, computeCustomerKey(customer), function(err, result) {
 			if (err) {
-				callback('cannot delete from inflight list');
+				return callback('cannot delete from inflight list');
 			}
 
 			callback(null, customer);
@@ -24,15 +24,14 @@ module.exports = function(winston) {
 	}
 
 	function getSetCustomerOrderDone(customer, callback) {
-		redisClient.getset(computeCustomerKey(customer), NO_INFLIGHT_ORDER, 'ex', TTL,
+		redisClient.getset(computeCustomerKey(customer), NO_INFLIGHT_ORDER,
 			function(err, prevOrderKey) {
 				if (err) {
-					winston.error(err);
-					callback('cannot set customerKey to done');
+					return callback('cannot set customerKey to done');
 				}
 
 				if (prevOrderKey === NO_INFLIGHT_ORDER) {
-					callback(customer + ' didnt have pending order');
+					return callback(customer + ' didnt have pending order');
 				}
 
 				callback(null, customer, prevOrderKey);
@@ -40,17 +39,37 @@ module.exports = function(winston) {
 		);	
 	}
 
+	function setCustomerTTL(customer, prevOrderKey, callback) {
+		redisClient.expire(computeCustomerKey(customer), TTL, function(err, result) {
+			if (err) {
+				winston.error('set customer TTL failed');
+			}
+
+			callback(null, customer, prevOrderKey);
+		});
+	}
+
 	function getSetDeliveryTimeNow(customer, prevOrderKey, callback) {
 		var timeNow = new Date().getTime();
-		redisClient.getset(prevOrderKey + ':deliveryTime', timeNow, 'ex', TTL, 
+		redisClient.getset(prevOrderKey + ':deliveryTime', timeNow,
 			function(err, prevDeliveryTime) {
 				if (err) {
-					callback('cannot getSet deliveryTime');
+					return callback('cannot getSet deliveryTime');
 				}
 
-				callback(null, customer, timeNow - prevDeliveryTime);				
+				callback(null, customer, prevOrderKey, timeNow - prevDeliveryTime);				
 			}
 		);
+	}
+
+	function setDeliveryTimeTTL(customer, prevOrderKey, dt, callback) {
+		redisClient.expire(prevOrderKey + ':deliveryTime', TTL, function(err, result) {
+			if (err) {
+				winston.error('set order TTL failed');
+			}
+
+			callback(null, customer, dt);
+		});
 	}
 
 	function notifyCustomer(customer, dt, callback) {
@@ -71,7 +90,9 @@ module.exports = function(winston) {
 			}, 
 			removeCustomerFromQueue, 
 			getSetCustomerOrderDone,
-			getSetDeliveryTimeNow, 
+			setCustomerTTL,
+			getSetDeliveryTimeNow,
+			setDeliveryTimeTTL,
 			notifyCustomer
 		], 
 			function(err, result) {

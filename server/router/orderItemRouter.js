@@ -22,10 +22,10 @@ module.exports = function(app, winston) {
 	}
 
 	function writeToInFlightQueue(newOrder, deliveryTime, callback) {
-		redisClient.rpush(INFLIGHT_ORDERS, computeCustomerKey(newOrder.customer), 'ex', TTL,
+		redisClient.rpush(INFLIGHT_ORDERS, computeCustomerKey(newOrder.customer),
 			function(err, result) {
 				if (err) {
-					callback(err);
+					return callback(err);
 				}
 
 				callback(null, newOrder, deliveryTime);
@@ -38,7 +38,7 @@ module.exports = function(app, winston) {
 		redisClient.set(computeCustomerKey(newOrder.customer), orderKey, 'ex', TTL, 
 			function(err, result) {
 				if (err) {
-					callback(err);
+					return callback(err);
 				}
 
 				callback(null, newOrder, deliveryTime);
@@ -49,7 +49,7 @@ module.exports = function(app, winston) {
 	function writeDeliveryTime(orderKey, newOrder, deliveryTime, callback) {
 		redisClient.set(orderKey + ':deliveryTime', deliveryTime, 'ex', TTL, function(err, result) {
 			if (err) {
-				callback(err);
+				return callback(err);
 			}
 
 			callback(null, orderKey, newOrder, deliveryTime);
@@ -60,7 +60,7 @@ module.exports = function(app, winston) {
 	function writeOrderInfo(orderKey, newOrder, deliveryTime, callback) {
 		redisClient.set(orderKey, JSON.stringify(newOrder), 'ex', TTL, function(err, result) {
 			if (err) {
-				callback(err);
+				return callback(err);
 			}
 
 			callback(null, orderKey, newOrder, deliveryTime);
@@ -81,8 +81,7 @@ module.exports = function(app, winston) {
 	function checkIfCustomerAlreadyHasAnOrder(newOrder, deliveryTime, callback) {
 		redisClient.get(computeCustomerKey(newOrder.customer), function(err, orderNumber) {
 			if (orderNumber !== NO_INFLIGHT_ORDER && orderNumber !== null) {
-				callback(newOrder.customer + ' already has an outstanding order ' + orderNumber);
-				winston.error('this still gets executed!!!!');
+				return callback(newOrder.customer + ' already has an outstanding order ' + orderNumber);
 			}
 
 			callback(null, newOrder, deliveryTime);
