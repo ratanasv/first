@@ -21,7 +21,7 @@ angular.module('vir.barista', [
 
 })
 
-.controller('BaristaCtrl', function($scope) {
+.controller('BaristaCtrl', ['$scope', 'findIndexOf', function($scope, findIndexOf) {
 	$scope.orders = [];
 	var socket = new WebSocket('wss://128.193.36.250:443');
 	socket.onopen = function() {
@@ -40,8 +40,46 @@ angular.module('vir.barista', [
 			return 0;
 		}
 
-		$scope.orders = payload.orders;
+		payload.orders.forEach(function(order, i) {
+
+			var found = findIndexOf($scope.orders, function(element) {
+				if (order.customer === element.customer) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+
+			if (found === -1) {
+				$scope.orders.push(payload.orders[i]);
+			} else {
+				$scope.orders[found].deliveryTime = payload[i].deliveryTime;
+			}
+		});
 		$scope.$apply();
+	};
+
+	$scope.onDone = function(customer) {
+		socket.send(JSON.stringify(
+			{
+				method: 'orderDone',
+				params: {
+					customer: customer
+				}
+			}
+		));
+	};
+}])
+
+.factory('findIndexOf', function() {
+	return function(array, predicate) {
+		for (var i=0; i<array.length; i++) {
+			var element = array[i];
+			if (predicate(element)) {
+				return i;
+			}
+		}
+		return -1;
 	};
 });
 

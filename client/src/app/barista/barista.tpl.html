@@ -2,6 +2,16 @@
 <div ng-repeat='order in orders' class='card'>
 	<div class='item item-text-wrap'>
 		{{order.customer}}, {{order.items}}, {{order.deliveryTime}}
+		<button class='button button-small button-positive' ng-click='onDone(order.customer)'>
+			Done
+		</button>
+		<button class='button button-small button-assertive' ng-click='onMore(order.customer)'>
+			+30
+		</button>
+		<button class='button button-small button-balanced' ng-click='onLess(order.customer)'>
+			-30
+		</button>
+
 	</div>
 </div>
 
