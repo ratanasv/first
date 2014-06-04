@@ -9,8 +9,11 @@ var NO_INFLIGHT_ORDER = require('./redisKeyCompute').NO_INFLIGHT_ORDER;
 var INFLIGHT_ORDERS = require('./redisKeyCompute').INFLIGHT_ORDERS;
 var writeWS = require('./writeWS');
 var async = require('async');
+var handlerHelperInitFunc = require('./handlerHelper');
 
 module.exports = function(winston) {
+	var handlerHelper = handlerHelperInitFunc(winston, redisClient);
+
 	return function handeSetDT(params, ws) {
 		if (!params.customer) {
 			writeWS(ws, 400, 'no customer in params', {});
