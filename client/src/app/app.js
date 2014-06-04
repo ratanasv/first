@@ -1,21 +1,14 @@
 angular.module( 'ngBoilerplate', [
   'templates-app',
   'templates-common',
-  'ngBoilerplate.home',
-  'ngBoilerplate.about',
   'ui.router',
-  'vir.login',
-  'vir.secure',
-  'vir.picloader',
-  'vir.purchase',
-  'vir.countdown',
-  'vir.settings',
+  'vir.customer',
   'vir.barista',
   'ionic'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
-  $urlRouterProvider.otherwise( '/purchase' );
+  $urlRouterProvider.otherwise( '/customer' );
 })
 
 .run( function run () {
@@ -27,8 +20,6 @@ angular.module( 'ngBoilerplate', [
       $scope.pageTitle = toState.data.pageTitle + ' | KEC Online Order' ;
     }
   });
-  $scope.settings = {};
-  $scope.selectedItems = [];
   $scope.items = {
     'donut' : {
       image: 'assets/donut.jpg',

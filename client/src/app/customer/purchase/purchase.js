@@ -1,4 +1,4 @@
-angular.module('vir.purchase', [
+angular.module('vir.customer.purchase', [
 	'ui.router',
 	'templates-app',
 	'templates-common',
@@ -6,12 +6,12 @@ angular.module('vir.purchase', [
 ])
 
 .config(function($stateProvider) {
-	$stateProvider.state( 'purchase' , {
+	$stateProvider.state( 'customer.purchase' , {
 		url: '/purchase',
 		views: {
-			'main': {
+			'customer': {
 				controller: 'PurchaseCtrl',
-				templateUrl: 'purchase/purchase.tpl.html'
+				templateUrl: 'customer/purchase/purchase.tpl.html'
 			}
 		},
 		data: {

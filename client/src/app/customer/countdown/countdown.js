@@ -1,4 +1,4 @@
-angular.module('vir.countdown', [
+angular.module('vir.customer.countdown', [
 	'ui.router',
 	'templates-app',
 	'templates-common',
@@ -6,12 +6,12 @@ angular.module('vir.countdown', [
 ])
 
 .config(function($stateProvider) {
-	$stateProvider.state( 'countdown' , {
+	$stateProvider.state( 'customer.countdown' , {
 		url: '/countdown',
 		views: {
-			'main': {
+			'customer': {
 				controller: 'CountdownCtrl',
-				templateUrl: 'countdown/countdown.tpl.html'
+				templateUrl: 'customer/countdown/countdown.tpl.html'
 			}
 		},
 		data: {

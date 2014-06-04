@@ -1,4 +1,4 @@
-angular.module('vir.settings', [
+angular.module('vir.customer.settings', [
 	'ui.router',
 	'templates-app',
 	'templates-common',
@@ -6,12 +6,12 @@ angular.module('vir.settings', [
 ])
 
 .config(function($stateProvider) {
-	$stateProvider.state( 'settings' , {
+	$stateProvider.state( 'customer.settings' , {
 		url: '/settings',
 		views: {
-			'main': {
+			'customer': {
 				controller: 'SettingsCtrl',
-				templateUrl: 'settings/settings.tpl.html'
+				templateUrl: 'customer/settings/settings.tpl.html'
 			}
 		},
 		data: {

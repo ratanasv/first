@@ -110,6 +110,10 @@ angular.module('vir.barista', [
 			}
 		));
 	};
+
+	setInterval(function() {
+
+	}, 1000);
 }])
 
 .factory('findIndexOf', function() {
