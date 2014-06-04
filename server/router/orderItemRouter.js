@@ -11,7 +11,7 @@ var computeDeliveryTimeKey = require('../lib/redisKeyCompute').computeDeliveryTi
 var ORDER_COUNTER = require('../lib/redisKeyCompute').ORDER_COUNTER;
 var TTL = require('../lib/redisKeyCompute').TTL;
 var INFLIGHT_ORDERS = require('../lib/redisKeyCompute').INFLIGHT_ORDERS;
-
+var NO_INFLIGHT_ORDER = require('../lib/redisKeyCompute').NO_INFLIGHT_ORDER;
 var async = require('async');
 
 
@@ -78,6 +78,16 @@ module.exports = function(app, winston) {
 		});
 	}
 
+	function checkIfCustomerAlreadyHasAnOrder(newOrder, deliveryTime, callback) {
+		redisClient.get(computeCustomerKey(newOrder.customer), function(err, orderNumber) {
+			if (orderNumber !== NO_INFLIGHT_ORDER && orderNumber !== null) {
+				callback(newOrder.customer + ' already has an outstanding order ' + orderNumber);
+			}
+
+			callback(null, newOrder, deliveryTime);
+		});
+	}
+
 
 	app.post('/item', function(req, res) {
 		var newOrder = req.body;
@@ -103,6 +113,7 @@ module.exports = function(app, winston) {
 			function(callback) {
 				callback(null, newOrder, deliveryTime);
 			},
+			checkIfCustomerAlreadyHasAnOrder,
 			incrementOrderCounter,
 			writeOrderInfo,
 			writeDeliveryTime,
@@ -112,7 +123,7 @@ module.exports = function(app, winston) {
 		], function(err, result) {
 			if (err) {
 				winston.error(err);
-				res.send(500);
+				return res.send(500, err);
 			}
 
 			res.send(200, JSON.stringify({
