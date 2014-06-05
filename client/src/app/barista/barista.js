@@ -93,7 +93,7 @@ angular.module('vir.barista', [
 				method: 'setDT',
 				params: {
 					customer: customer,
-					dt: 30
+					dt: 30000
 				}
 			}
 		));
@@ -105,7 +105,7 @@ angular.module('vir.barista', [
 				method: 'setDT',
 				params: {
 					customer: customer,
-					dt: -30
+					dt: -30000
 				}
 			}
 		));
