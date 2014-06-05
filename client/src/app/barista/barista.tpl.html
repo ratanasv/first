@@ -14,14 +14,14 @@
 		{{item}} 
 		</h2> 
 		<div class='vir-horizontal-element vir-control'>
-			<a class='button button-positive' ng-click='onDone(order.customer)'>Done</a>
-			<a class='button button-assertive' ng-click='onMore(order.customer)'>+30</a>
-			<a class='button button-balanced' ng-click='onLess(order.customer)'>-30</a>
+			<a class='button button-positive' ng-click='onDone(order)'>Done</a>
+			<a class='button button-assertive' ng-click='onMore(order)'>+30</a>
+			<a class='button button-balanced' ng-click='onLess(order)'>-30</a>
 		</div>
 
 	</div>
 	<div class='item item-divider'>
-		Time Left: {{order.deliveryTime}} seconds
+		Time Left: {{order.timeLeft | number : 0}} seconds
 	</div>
 </div>
 

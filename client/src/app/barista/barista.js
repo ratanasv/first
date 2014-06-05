@@ -62,18 +62,18 @@ angular.module('vir.barista', [
 		$scope.$apply();
 	};
 
-	$scope.onDone = function(customer) {
+	$scope.onDone = function(order) {
 		socket.send(JSON.stringify(
 			{
 				method: 'orderDone',
 				params: {
-					customer: customer
+					customer: order.customer
 				}
 			}
 		));
 
 		var found = findIndexOf($scope.orders, function(element) {
-			if (customer === element.customer) {
+			if (order.customer === element.customer) {
 				return 1;
 			} else {
 				return 0;
@@ -87,32 +87,38 @@ angular.module('vir.barista', [
 		$scope.orders.splice(found, 1);
 	};
 
-	$scope.onMore = function(customer) {
+	$scope.onMore = function(order) {
 		socket.send(JSON.stringify(
 			{
 				method: 'setDT',
 				params: {
-					customer: customer,
+					customer: order.customer,
 					dt: 30000
 				}
 			}
 		));
+		order.deliveryTime += 30000;
 	};
 
-	$scope.onLess = function(customer) {
+	$scope.onLess = function(order) {
 		socket.send(JSON.stringify(
 			{
 				method: 'setDT',
 				params: {
-					customer: customer,
+					customer: order.customer,
 					dt: -30000
 				}
 			}
 		));
+		order.deliveryTime -= 30000;
 	};
 
 	setInterval(function() {
-
+		for (var i=0; i<$scope.orders.length; i++) {
+			var order = $scope.orders[i];
+			order.timeLeft = (order.deliveryTime - new Date().getTime())/1000;
+		}
+		$scope.$apply();
 	}, 1000);
 }])
 

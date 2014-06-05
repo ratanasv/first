@@ -48,6 +48,10 @@ module.exports = function(winston) {
 		callback(null, {});
 	}
 
+	function notifyBarista(customerKey, newDeliveryTime, callback) {
+		redisClient.publish(INFLIGHT_ORDERS, 'blalblab');
+	}
+
 	return function handeSetDT(params, ws) {
 		if (!params.customer) {
 			writeWS(ws, 400, 'no customer in params', {});
