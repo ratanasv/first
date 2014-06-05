@@ -10,10 +10,10 @@
 		Name: {{order.customer}}
 	</div>
 	<div class='item item-text-wrap'>
-		<h2 ng-repeat='item in order.items'>
+		<h2 ng-repeat='item in order.items' class='vir-horizontal-element'>
 		{{item}} 
 		</h2> 
-		<div class='control'>
+		<div class='vir-horizontal-element vir-control'>
 			<a class='button button-positive' ng-click='onDone(order.customer)'>Done</a>
 			<a class='button button-assertive' ng-click='onMore(order.customer)'>+30</a>
 			<a class='button button-balanced' ng-click='onLess(order.customer)'>-30</a>
