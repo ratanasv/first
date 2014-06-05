@@ -21,7 +21,7 @@ angular.module('vir.customer.purchase', [
 
 })
 
-.controller('PurchaseCtrl', function($scope, $http, $location, $ionicPopup) {
+.controller('PurchaseCtrl', function($scope, $http, $location, showNamePrompt) {
 	
 	$scope.toggleSelection = function(id) {
 		if ($scope.items[id].selected === undefined) {
@@ -52,33 +52,7 @@ angular.module('vir.customer.purchase', [
 			return alert('your order is empty!');
 		}
 
-		if (!$scope.settings.name || $scope.settings.name.length === 0) {
-			var namePopup = $ionicPopup.show({
-				template: '<input type="text" ng-model="settings.name">',
-				title: 'Enter Your Name',
-				subTitle: 'Just firstname is ok',
-				scope: $scope,
-				buttons: [{
-					text: '<b>Submit</b>',
-					type: 'button-positive',
-					onTap: function(e) {
-						if (!$scope.settings.name) {
-							e.preventDefault();
-						} else {
-							return $scope.settings.name;
-						}
-					}
-				}]
-			});
-			
-			namePopup.then(function(name) {
-				if (name) {
-					sendRequest();
-				}
-			});
-		} else {
-			sendRequest();
-		}
+		showNamePrompt($scope, sendRequest);
 
 		function sendRequest() {
 			$http.post('http://128.193.36.250/item', {

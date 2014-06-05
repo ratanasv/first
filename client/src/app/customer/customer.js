@@ -27,5 +27,37 @@ angular.module('vir.customer', [
 .controller('CustomerCtrl', function AppCtrl($scope) {
 	$scope.settings = {};
 	$scope.selectedItems = [];
+})
+
+.factory('showNamePrompt', function($ionicPopup) {
+	return function($scope, callback) {
+		if (!$scope.settings.name|| $scope.settings.name.length === 0) {
+			var namePopup = $ionicPopup.show({
+				template: '<input type="text" ng-model="settings.name">',
+				title: 'Enter Your Name',
+				subTitle: 'Just firstname is ok',
+				scope: $scope,
+				buttons: [{
+					text: '<b>Submit</b>',
+					type: 'button-positive',
+					onTap: function(e) {
+						if (!$scope.settings.name) {
+							e.preventDefault();
+						} else {
+							return $scope.settings.name;
+						}
+					}
+				}]
+			});
+			
+			namePopup.then(function(name) {
+				if (name) {
+					callback();
+				}
+			});
+		} else {
+			callback();
+		}
+	};
 });
 

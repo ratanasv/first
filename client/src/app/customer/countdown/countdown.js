@@ -21,44 +21,49 @@ angular.module('vir.customer.countdown', [
 
 })
 
-.controller('CountdownCtrl', function($scope, $http) {
-	var timerId;
+.controller('CountdownCtrl', function($scope, $http, showNamePrompt, deliveryTimeWebSocket) {
+	$scope.deliveryTime = 0;
 
-	if (!$scope.settings.name || $scope.settings.name.length === 0) {
-		return alert('input valid name');
-	}
+	setTimeout(function() {
+		showNamePrompt($scope, deliveryTimeWebSocket($scope));
+	}, 100); //done this way since angular template will be displayed unrendered otherwise.
+})
 
-	var socket = new WebSocket('ws://128.193.36.250:80');
-	var deliveryTime = 0;
-	socket.onopen = function() {
-		socket.send(JSON.stringify(
-			{
-				method: 'getDeliveryTime',
-				params: {
-					customer: $scope.settings.name
+.factory('deliveryTimeWebSocket', function() {
+	return function($scope) {
+			return function() {
+			var socket = new WebSocket('ws://128.193.36.250:80');
+		
+			socket.onopen = function() {
+				socket.send(JSON.stringify(
+					{
+						method: 'getDeliveryTime',
+						params: {
+							customer: $scope.settings.name
+						}
+					}
+				));
+			};
+			socket.onmessage = function(message) {
+				var messageObject = JSON.parse(message.data);
+				if (messageObject.code !== 200) {
+					alert('error: ' + messageObject.header);
+					return 0;
 				}
-			}
-		));
-	};
-	socket.onmessage = function(message) {
-		var messageObject = JSON.parse(message.data);
-		if (messageObject.code !== 200) {
-			alert('error: ' + messageObject.header);
-			clearInterval(timerId);
-			return 0;
-		}
 
-		if (!messageObject.body.deliveryTime) {
-			alert('error: no delivery time');
-			return 0;
-		}
+				if (!messageObject.body.deliveryTime) {
+					alert('error: no delivery time');
+					return 0;
+				}
 
-		deliveryTime = messageObject.body.deliveryTime;
-		$scope.$apply();
+				$scope.deliveryTime = messageObject.body.deliveryTime;
+				$scope.$apply();
+
+				setInterval(function() {
+					$scope.timeRemaining = ($scope.deliveryTime - new Date().getTime())/1000;
+					$scope.$apply();
+				}, 1000);
+			};
+		};
 	};
-	timerId = setInterval(function() {
-		$scope.timeRemaining = (deliveryTime - new Date().getTime())/1000;
-		$scope.$apply();
-	}, 1000);
 });
-
