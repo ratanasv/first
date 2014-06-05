@@ -40,15 +40,16 @@ module.exports = function(winston) {
 				winston.info('barista subscribes to ' + INFLIGHT_ORDERS);
 			});
 			subscriber.on('message', function(channel, newCustomer) {
+				var newCustomerKey = computeCustomerKey(newCustomer);
 				if (channel !== INFLIGHT_ORDERS) {
 					return winston.error('barista shouldnt be subscribed to ' + channel);
 				}
 
-				winston.info('new customer to the list ' + newCustomer);
+				winston.info('new customer to the list ' + newCustomerKey);
 
 				async.waterfall([
 					function(callback) {
-						callback(null, [newCustomer]);
+						callback(null, [newCustomerKey]);
 					},
 					handlerHelper.retrieveOrdersKeys, 
 					handlerHelper.retrieveOrdersInfo,

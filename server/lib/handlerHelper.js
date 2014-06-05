@@ -16,7 +16,7 @@ return {
 
 			replies.forEach(function(orderKey, index) {
 				if (orderKey === null || orderKey === NO_INFLIGHT_ORDER) {
-					winston.warn(index + ' doesnt exist, deleting automatically');
+					winston.warn(customersList[index] + ' doesnt exist, deleting automatically');
 					redisClient.lrem(INFLIGHT_ORDERS, 0, customersList[index]);
 				} else {
 					inFlightOrdersKeys.push(orderKey);
