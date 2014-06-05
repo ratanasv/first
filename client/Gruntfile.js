@@ -124,7 +124,7 @@ module.exports = function ( grunt ) {
           {
             src: ['<%= vendor_files.fonts %>'],
             dest: '<%= build_dir %>/fonts/',
-            cwd: 'vendor/ionic/fonts/',
+            cwd: 'vendor/ionic/release/fonts/',
             expand: true
           }
         ]

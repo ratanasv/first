@@ -62,8 +62,7 @@ module.exports = {
    */
   vendor_files: {
     js: [
-      'vendor/ionic/js/dist/js/ionic.bundle.js',
-      'vendor/angular/angular.js',
+      'vendor/ionic/release/js/ionic.bundle.js',
       'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'vendor/bower-angular-placeholders/angular-placeholders.min.js',
       'vendor/angular-ui-router/release/angular-ui-router.js',
@@ -72,7 +71,7 @@ module.exports = {
       'vendor/d3/d3.js'
     ],
     css: [
-      'vendor/ionic/css/ionic.css'
+      'vendor/ionic/release/css/ionic.css'
     ],
     assets: [
 
