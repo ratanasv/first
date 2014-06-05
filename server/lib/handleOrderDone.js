@@ -42,34 +42,38 @@ module.exports = function(winston) {
 	function setCustomerTTL(customer, prevOrderKey, callback) {
 		redisClient.expire(computeCustomerKey(customer), TTL, function(err, result) {
 			if (err) {
-				winston.error('set customer TTL failed');
+				return callback('set customer TTL failed');
 			}
 
 			callback(null, customer, prevOrderKey);
 		});
 	}
 
-	function getSetDeliveryTimeNow(customer, prevOrderKey, callback) {
-		var timeNow = new Date().getTime();
-		redisClient.getset(prevOrderKey + ':deliveryTime', timeNow,
-			function(err, prevDeliveryTime) {
-				if (err) {
-					return callback('cannot getSet deliveryTime');
-				}
-
-				callback(null, customer, prevOrderKey, timeNow - prevDeliveryTime);				
+	function getDeliveryTime(customer, prevOrderKey, callback) {
+		redisClient.get(prevOrderKey + ':deliveryTime', function(err, deliveryTime) {
+			if (err) {
+				return callback('get deliveryTime failed');
 			}
-		);
+
+			callback(null, customer, prevOrderKey, deliveryTime);
+		});
 	}
 
-	function setDeliveryTimeTTL(customer, prevOrderKey, dt, callback) {
-		redisClient.expire(prevOrderKey + ':deliveryTime', TTL, function(err, result) {
-			if (err) {
-				winston.error('set order TTL failed');
-			}
+	function decreaseDeliveryTimeNow(customer, prevOrderKey, prevDeliveryTime, callback) {
+		var timeNow = new Date().getTime();
+		var dt = timeNow - prevDeliveryTime;
+		if (dt > 0) {
+			return callback('order ' + prevOrderKey + 'has already expired');
+		}
+		redisClient.decrby(prevOrderKey + ':deliveryTime', dt,
+			function(err, newDeliveryTime) {
+				if (err) {
+					return callback('cannot decrby deliveryTime');
+				}
 
-			callback(null, customer, dt);
-		});
+				callback(null, customer, dt);		
+			}
+		);
 	}
 
 	function notifyCustomer(customer, dt, callback) {
@@ -91,8 +95,8 @@ module.exports = function(winston) {
 			removeCustomerFromQueue, 
 			getSetCustomerOrderDone,
 			setCustomerTTL,
-			getSetDeliveryTimeNow,
-			setDeliveryTimeTTL,
+			getDeliveryTime,
+			decreaseDeliveryTimeNow,
 			notifyCustomer
 		], 
 			function(err, result) {
