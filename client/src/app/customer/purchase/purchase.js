@@ -21,7 +21,7 @@ angular.module('vir.customer.purchase', [
 
 })
 
-.controller('PurchaseCtrl', function($scope, $http, $location) {
+.controller('PurchaseCtrl', function($scope, $http, $location, $ionicPopup) {
 	
 	$scope.toggleSelection = function(id) {
 		if ($scope.items[id].selected === undefined) {
@@ -53,19 +53,46 @@ angular.module('vir.customer.purchase', [
 		}
 
 		if (!$scope.settings.name || $scope.settings.name.length === 0) {
-			return alert('input valid name');
+			var namePopup = $ionicPopup.show({
+				template: '<input type="text" ng-model="settings.name">',
+				title: 'Enter Your Name',
+				subTitle: 'Just firstname is ok',
+				scope: $scope,
+				buttons: [{
+					text: '<b>Submit</b>',
+					type: 'button-positive',
+					onTap: function(e) {
+						if (!$scope.settings.name) {
+							e.preventDefault();
+						} else {
+							return $scope.settings.name;
+						}
+					}
+				}]
+			});
+			
+			namePopup.then(function(name) {
+				if (name) {
+					sendRequest();
+				}
+			});
+		} else {
+			sendRequest();
 		}
 
-		$http.post('http://128.193.36.250/item', {
-			customer: $scope.settings.name,
-			items: $scope.selectedItems
-		})
-		.success(function(data, status, headers, config) {
-			$location.url('/customer/countdown');
-		})
-		.error(function(data, status, headers, config) {
-			alert('error: ' + data);
-		});
+		function sendRequest() {
+			$http.post('http://128.193.36.250/item', {
+				customer: $scope.settings.name,
+				items: $scope.selectedItems
+			})
+			.success(function(data, status, headers, config) {
+				$location.url('/customer/countdown');
+			})
+			.error(function(data, status, headers, config) {
+				alert('error: ' + data);
+			});
+		}
+
 	};
 });
 
