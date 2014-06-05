@@ -35,25 +35,16 @@ module.exports = function(winston) {
 	}
 
 	function deltaDeliveryTime(customerKey, deliveryTimeKey, dt, prevDeliveryTime, callback) {
-		winston.warn('dt = ' + dt);
-		winston.warn('prev = ' + prevDeliveryTime);
-		var newDeliveryTime = prevDeliveryTime + dt;
-		winston.warn('new = ' + newDeliveryTime);
-		function onNewDelivertyTimeCallback(err, result) {
+		redisClient.incrby(deliveryTimeKey, dt, function(err, newDeliveryTime) {
 			if (err) {
 				return callback('cannot set new deliveryTime for ' + deliveryTimeKey);
 			}
 			callback(null, customerKey, newDeliveryTime);
-		}
-		if (dt > 0) {
-			redisClient.incrby(deliveryTimeKey, dt, onNewDelivertyTimeCallback);
-		} else {
-			redisClient.decrby(deliveryTimeKey, -1*dt, onNewDelivertyTimeCallback);
-		}
+		});
 	}
 
-	function notifyClient(customerKey, dt, callback) {
-		redisClient.publish(customerKey, dt);
+	function notifyClient(customerKey, newDeliveryTime, callback) {
+		redisClient.publish(customerKey, newDeliveryTime);
 		callback(null, {});
 	}
 
@@ -69,6 +60,9 @@ module.exports = function(winston) {
 			function(callback) {
 				callback(null, computeCustomerKey(params.customer), params.dt);
 			},
+			retrieveOrderKey,
+			getDeliveryTime,
+			deltaDeliveryTime,
 			notifyClient
 		], 
 			function(err, result) {
