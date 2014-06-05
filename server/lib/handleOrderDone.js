@@ -51,10 +51,21 @@ module.exports = function(winston) {
 
 	function getDeliveryTime(customer, prevOrderKey, callback) {
 		redisClient.get(prevOrderKey + ':deliveryTime', function(err, deliveryTime) {
-			var timeNow = new Date().getTime();
-			var dt = timeNow - deliveryTime;
+			
 			if (err) {
 				return callback('get deliveryTime failed');
+			}
+
+			callback(null, customer, prevOrderKey, deliveryTime);
+		});
+	}
+
+	function setDeliveryTimeToNow(customer, prevOrderKey, deliveryTime, callback) {
+		var timeNow = new Date().getTime();
+		var dt = timeNow - deliveryTime;
+		redisClient.incrby(prevOrderKey + ':deliveryTime', dt, function(err, newDeliveryTime) {
+			if (err) {
+				return callback('set deliveryTime to now failed');
 			}
 
 			callback(null, customer, dt);
@@ -81,6 +92,7 @@ module.exports = function(winston) {
 			getSetCustomerOrderDone,
 			setCustomerTTL,
 			getDeliveryTime,
+			setDeliveryTimeToNow,
 			notifyCustomer
 		], 
 			function(err, result) {

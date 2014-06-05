@@ -69,7 +69,7 @@ module.exports = function(winston) {
 			function(callback) {
 				callback(null, computeCustomerKey(params.customer), params.dt);
 			},
-			notifyClient,
+			notifyClient
 		], 
 			function(err, result) {
 				if (err) {
@@ -81,4 +81,4 @@ module.exports = function(winston) {
 			}
 		);
 	};
-}
+};

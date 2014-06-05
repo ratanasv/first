@@ -13,7 +13,7 @@ var handlerHelperInitFunc = require('./handlerHelper');
 
 
 module.exports = function(winston) {
-	handlerHelper = handlerHelperInitFunc(winston, redisClient);
+	var handlerHelper = handlerHelperInitFunc(winston, redisClient);
 
 	function retrieveInFlightOrders(callback) {
 		redisClient.lrange(INFLIGHT_ORDERS, 0, -1, function(err, customersList) {

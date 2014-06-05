@@ -12,87 +12,95 @@ var handleGetInFlightOrders = require('./handleGetInFlightOrders')(winston);
 var handleOrderDone = require('./handleOrderDone')(winston);
 var handleSetDT = require('./handleSetDT')(winston);
 var writeWS = require('./writeWS');
+var async = require('async');
 
 
 function handleGetDeliveryTime(params, ws) {
 	var customer = params.customer;
-	var customerKey = computeCustomerKey(customer);
 
 	if (!customer) {
-		return writeWS(ws, 500, 'invalid parameter (no customer field)');
+		return writeWS(ws, 400, 'invalid parameter (no customer field)');
 	}
 
-	function subscribeChannel(orderKey) {
-		return function(err, deliveryTime) {
-			var deliveryTimeKey = orderKey + ':deliveryTime'; 
-			var subscriber;
-			var customerChannel = customerKey;
-
+	function retriveOrderKey(customer, callback) {
+		redisClient.get(computeCustomerKey(customer), function(err, orderKey) {
 			if (err) {
-				winston.error(err);
-				return writeWS(ws, 500, 'cannot retrieve order delivery time', {});
+				return callback(err);
+			}
+			if (orderKey === null) {
+				return callback('redis has no order for this customer ' + customer);
+			}
+			if (orderKey === NO_INFLIGHT_ORDER) {
+				return callback(customer + ' has no inflight order');
+			}
+
+			callback(null, customer, orderKey);
+		});
+	}
+
+	function retrieveDeliveryTime(customer, orderKey, callback) {
+		redisClient.get(orderKey + ':deliveryTime', function(err, deliveryTime) {
+			if (err) {
+				return callback('cannot retrieve order delivery time');
 			}
 
 			if (deliveryTime === null) {
-				return writeWS(ws, 400, 'no delivery time for this customer', {});
+				return callback('no delivery time for this customer');
 			}
 
-			writeWS(ws, 200, 'success', {
+			callback(null, customer, orderKey, deliveryTime);
+		});
+	}
+
+	function subscribeCustomer(customer, orderKey, deliveryTime, callback) {
+		var customerChannel = computeCustomerKey(customer);
+		var subscriber;
+
+		subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
+		subscriber.on('subscribe', function(channel, count) {
+			winston.info(customer + ' subscribes to ' + customerChannel);
+		});
+		subscriber.on('message', function(channel, dt) {
+			if (channel !== customerChannel) {
+				return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
+			}
+			if (isNaN(dt)) {
+				return winston.error(dt + ' is not a number');
+			}
+
+			winston.info(orderKey + ' has a dt ' + dt);
+
+			callback(null, {
 				deliveryTime: deliveryTime
 			});
+		});
+		subscriber.subscribe(customerChannel);
 
-			subscriber = redis.createClient(config['REDIS_PORT'], config['FOXRIVER_IP']);
-			subscriber.on('subscribe', function(channel, count) {
-				winston.info(customer + ' subscribes to ' + customerChannel);
-			});
-			subscriber.on('message', function(channel, dt) {
-				if (channel !== customerChannel) {
-					return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
-				}
-				if (isNaN(dt)) {
-					return winston.error(dt + ' is not a number');
-				}
+		ws.on('close', function() {
+			winston.info(customer + ' unsubscribe from ' + customerChannel);
+			subscriber.unsubscribe();
+			subscriber.end();
+		});
 
-				winston.info(orderKey + ' has a dt ' + dt);
-
-				redisClient.incrby(deliveryTimeKey, dt, function(err, newDeliveryTime) {
-					if (err) {
-						winston.error(err);
-						return writeWS(ws, 500, 'increase deliveryTime failed');
-					}
-
-					writeWS(ws, 200, '', {
-						deliveryTime: newDeliveryTime
-					});
-				});		
-			});
-			subscriber.subscribe(customerChannel);
-
-			ws.on('close', function() {
-				winston.info(customer + ' unsubscribe from ' + customerChannel);
-				subscriber.unsubscribe();
-				subscriber.end();
-			});
-		};
+		callback(null, {
+			deliveryTime: deliveryTime
+		});
 	}
 
-	function queryDeliveryTime(err, orderKey) {
-		var deliveryTimeKey = orderKey + ':deliveryTime'; 
+	async.waterfall([
+		function(callback) {
+			callback(null, customer);
+		},
+		retriveOrderKey,
+		retrieveDeliveryTime,
+		subscribeCustomer
+	], function(err, result) {
 		if (err) {
 			winston.error(err);
-			return writeWS(ws, 500, 'redis customer retrieval error', {});
+			return writeWS(ws, 500, err, {});
 		}
-		if (orderKey === null) {
-			return writeWS(ws, 400, 'redis no order for this customer error', {});
-		}
-		if (orderKey === NO_INFLIGHT_ORDER) {
-			return writeWS(ws, 400, 'this customer has no inflight order', {});
-		}
-
-		redisClient.get(deliveryTimeKey, subscribeChannel(orderKey));
-	}
-
-	redisClient.get(customerKey, queryDeliveryTime);
+		writeWS(ws, 200, '', result);
+	});
 }
 
 
