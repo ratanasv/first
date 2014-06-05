@@ -68,12 +68,12 @@ module.exports = function(winston) {
 				return callback('set deliveryTime to now failed');
 			}
 
-			callback(null, customer, dt);
+			callback(null, customer, timeNow);
 		});
 	}
 
-	function notifyCustomer(customer, dt, callback) {
-		redisClient.publish(computeCustomerKey(customer), dt);
+	function notifyCustomer(customer, newDeliveryTime, callback) {
+		redisClient.publish(computeCustomerKey(customer), newDeliveryTime);
 		callback(null, {});
 	}
 

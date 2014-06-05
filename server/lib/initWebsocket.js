@@ -60,18 +60,18 @@ function handleGetDeliveryTime(params, ws) {
 		subscriber.on('subscribe', function(channel, count) {
 			winston.info(customer + ' subscribes to ' + customerChannel);
 		});
-		subscriber.on('message', function(channel, dt) {
+		subscriber.on('message', function(channel, newDeliveryTime) {
 			if (channel !== customerChannel) {
 				return winston.error(customer + ' shouldnt be subscribed to ' + customerChannel);
 			}
-			if (isNaN(dt)) {
-				return winston.error(dt + ' is not a number');
+			if (isNaN(newDeliveryTime)) {
+				return winston.error(newDeliveryTime + ' is not a number');
 			}
 
-			winston.info(orderKey + ' has a dt ' + dt);
+			winston.info(orderKey + ' has a new deliveryTime ' + newDeliveryTime);
 
 			callback(null, {
-				deliveryTime: deliveryTime
+				deliveryTime: newDeliveryTime
 			});
 		});
 		subscriber.subscribe(customerChannel);
