@@ -92,6 +92,7 @@ module.exports = function(app, winston) {
 	app.post('/item', function(req, res) {
 		var newOrder = req.body;
 		var deliveryTime;
+		var defaultDeliveryTime;
 
 		if (!newOrder) {
 			return res.send(400, 'no body in the request');
@@ -107,7 +108,15 @@ module.exports = function(app, winston) {
 		}
 
 		newOrder.orderTime = new Date().getTime();
-		deliveryTime = newOrder.orderTime + (1000 * 60 * 2);
+		defaultDeliveryTime = newOrder.orderTime + (1000 * 60 * 5);
+
+		if (newOrder.distance) {
+			deliveryTime = Math.floor(newOrder.orderTime + (newOrder.distance * 69 * 10 * 60 * 1000));
+			deliveryTime = (deliveryTime < defaultDeliveryTime) ? defaultDeliveryTime : deliveryTime;
+		} else {
+			deliveryTime = defaultDeliveryTime
+		}
+		
 
 		async.waterfall([
 			function(callback) {

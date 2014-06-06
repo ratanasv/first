@@ -57,7 +57,8 @@ angular.module('vir.customer.purchase', [
 		function sendRequest() {
 			$http.post('http://128.193.36.250/item', {
 				customer: $scope.settings.name,
-				items: $scope.selectedItems
+				items: $scope.selectedItems,
+				distance: $scope.settings.distance
 			})
 			.success(function(data, status, headers, config) {
 				$location.url('/customer/countdown');

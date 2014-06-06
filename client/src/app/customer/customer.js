@@ -27,6 +27,26 @@ angular.module('vir.customer', [
 .controller('CustomerCtrl', function AppCtrl($scope) {
 	$scope.settings = {};
 	$scope.selectedItems = [];
+
+	if (!navigator.geolocation){
+		return alert('geolocation is not supported');
+	}
+
+	function success(position) {
+		var latitude  = position.coords.latitude;
+		var longitude = position.coords.longitude;
+		var LATITUDE = 44.5671;
+		var LONGTITUDE = -123.278596;
+
+		$scope.settings.distance = Math.sqrt(Math.pow(latitude-LATITUDE, 2) + 
+			Math.pow(longitude-LONGTITUDE, 2));
+	}
+
+	function error() {
+		alert('geolocation error');
+	}
+
+	navigator.geolocation.getCurrentPosition(success, error);
 })
 
 .factory('showNamePrompt', function($ionicPopup) {
