@@ -1,11 +1,11 @@
 <ion-content style='padding-top: 44px;'>
-<div ng-show='orders.length === 0' class='card'>
+<div ng-show='orders.length === 0' class='card vir-order-animate'>
 	<div class='item item-text-wrap'>
 		No orders pending...
 	</div>
 </div>
 
-<div ng-repeat='order in orders' class='card'>
+<div ng-repeat='order in orders' class='card vir-order-animate'>
 	<div class='item item-divider'>
 		Name: {{order.customer}}
 	</div>

@@ -1,7 +1,7 @@
 <ion-content style='padding-top: 44px;'>
-<div ng-cloak class='list'>
+<div class='list'>
 
-	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right fade-in' ng-click='toggleSelection(key)' >
+	<div ng-repeat='(key, value) in items' class='item item-thumbnail-left item-icon-right vir-order-animate' ng-click='toggleSelection(key)' >
 		<img ng-src='{{value.image}}'>
 		<h2>{{value.name}}</h2>
 		<h3> ${{value.cost}}</h3>

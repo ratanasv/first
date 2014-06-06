@@ -4,7 +4,8 @@ angular.module( 'ngBoilerplate', [
   'ui.router',
   'vir.customer',
   'vir.barista',
-  'ionic'
+  'ionic',
+  'ngAnimate'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {

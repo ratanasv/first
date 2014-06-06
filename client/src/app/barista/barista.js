@@ -2,7 +2,8 @@ angular.module('vir.barista', [
 	'ui.router',
 	'templates-app',
 	'templates-common',
-	'ionic'
+	'ionic',
+	'ngAnimate'
 ])
 
 .config(function($stateProvider) {

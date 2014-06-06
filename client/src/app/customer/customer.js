@@ -9,7 +9,7 @@ angular.module('vir.customer', [
 ])
 
 .config( function myAppConfig ($stateProvider, $urlRouterProvider) {
-	$urlRouterProvider.when('/customer', '/customer/settings');
+	$urlRouterProvider.when('/customer', '/customer/purchase');
 	$stateProvider.state( 'customer' , {
 		url: '/customer',
 		views: {
