@@ -62,7 +62,7 @@ return {
 				if (deliveryTime === null) {
 					return callback('item #' + index + ' has no deliveryTime');
 				}
-				ordersInfo[index].deliveryTime = deliveryTime;
+				ordersInfo[index].deliveryTime = parseInt(deliveryTime);
 			});
 			callback(null, ordersInfo);
 		});
